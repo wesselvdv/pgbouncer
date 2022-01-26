@@ -1,5 +1,5 @@
-% PGBOUNCER(1) @PACKAGE_VERSION@ | Databases
+% pg_ddm(1) @PACKAGE_VERSION@ | Databases
 
 ## Name
 
-pgbouncer - lightweight connection pooler for PostgreSQL
+pg_ddm - lightweight connection pooler for PostgreSQL

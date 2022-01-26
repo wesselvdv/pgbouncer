@@ -1,5 +1,5 @@
 /*
- * PgBouncer - Lightweight connection pooler for PostgreSQL.
+ * pg_ddm - Lightweight connection pooler for PostgreSQL.
  *
  * Copyright (c) 2007-2009  Marko Kreen, Skype Technologies OÜ
  *
@@ -62,6 +62,7 @@ static bool check_client_passwd(PgSocket *client, const char *passwd)
 		default:
 			return false;
 		}
+		break;
 	case AUTH_MD5: {
 		char *stored_passwd;
 		char md5[MD5_PASSWD_LEN + 1];
@@ -543,11 +544,13 @@ static bool decide_startup_pool(PgSocket *client, PktHdr *pkt)
 		} else if (strcmp(key, "application_name") == 0) {
 			set_appname(client, val);
 			appname_found = true;
-		} else if (varcache_set(&client->vars, key, val)) {
-			slog_debug(client, "got var: %s=%s", key, val);
+		/*} else if (varcache_set(&client->vars, key, val)) {
+			slog_debug(client, "got var: %s=%s", key, val);*/
 		} else if (strlist_contains(cf_ignore_startup_params, key)) {
 			slog_debug(client, "ignoring startup parameter: %s=%s", key, val);
-		} else {
+		} else if (varcache_set(&client->vars, key, val)) {
+        	slog_debug(client, "got var: %s=%s", key, val);
+        } else {
 			slog_warning(client, "unsupported startup parameter: %s=%s", key, val);
 			disconnect_client(client, true, "unsupported startup parameter: %s", key);
 			return false;
@@ -570,7 +573,7 @@ static bool decide_startup_pool(PgSocket *client, PktHdr *pkt)
 	   nb: new incoming conn will be attached to PgSocket, thus
 	   get_active_client_count() counts it */
 	if (get_active_client_count() > cf_max_client_conn) {
-		if (strcmp(dbname, "pgbouncer") != 0) {
+		if (strcmp(dbname, "pg_ddm") != 0) {
 			disconnect_client(client, true, "no more connections allowed (max_client_conn)");
 			return false;
 		}
@@ -946,6 +949,12 @@ static bool handle_client_work(PgSocket *client, PktHdr *pkt)
 
 	if (client->pool->db->admin)
 		return admin_handle_client(client, pkt);
+
+	if (pkt->type == 'Q' || pkt->type == 'P') {
+		 if (!rewrite_query(client, pkt)) {
+			return false;
+		}
+	}
 
 	/* acquire server */
 	if (!find_server(client))

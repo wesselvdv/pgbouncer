@@ -1,9 +1,9 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([PgBouncer],
+AC_INIT([pg_ddm],
         [1.16.1],
-        [https://github.com/pgbouncer/pgbouncer/issues], [],
-        [https://www.pgbouncer.org/])
+        [https://github.com/pg_ddm/pg_ddm/issues], [],
+        [https://www.pg_ddm.org/])
 AC_CONFIG_SRCDIR(src/janitor.c)
 AC_CONFIG_HEADERS([lib/usual/config.h])
 AC_PREREQ([2.59])
@@ -196,6 +196,8 @@ fi # !udns
 fi # !cares
 
 ## end of DNS
+
+PKG_CHECK_MODULES(RUBY, ruby)
 
 AC_USUAL_TLS
 

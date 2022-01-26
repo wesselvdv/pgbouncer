@@ -99,13 +99,13 @@ task:
   dist_script:
     - make dist
     - PACKAGE_VERSION=$(sed -n 's/PACKAGE_VERSION = //p' config.mak)
-    - tar -x -v -f pgbouncer-${PACKAGE_VERSION}.tar.gz
-    - cd pgbouncer-${PACKAGE_VERSION}/
+    - tar -x -v -f pg_ddm-${PACKAGE_VERSION}.tar.gz
+    - cd pg_ddm-${PACKAGE_VERSION}/
     - ./configure --prefix=$HOME/install2 --enable-werror --without-cares $configure_args
     - make
     - make install
   tarball_artifacts:
-    path: "pgbouncer-*.tar.gz"
+    path: "pg_ddm-*.tar.gz"
   always:
     configure_artifacts:
       path: "config.log"

@@ -1,5 +1,5 @@
 /*
- * PgBouncer - Lightweight connection pooler for PostgreSQL.
+ * pg_ddm - Lightweight connection pooler for PostgreSQL.
  *
  * Copyright (c) 2007-2009  Marko Kreen, Skype Technologies OÜ
  *
@@ -278,7 +278,7 @@ void fill_local_addr(PgSocket *sk, int fd, bool is_unix)
 /*
  * Error handling around evtimer_add() is nasty as the code
  * may not be called again.  As there is fixed number of timers
- * in pgbouncer, provider safe_evtimer_add() that stores args of
+ * in pg_ddm, provider safe_evtimer_add() that stores args of
  * failed calls in static array and retries later.
  */
 #define TIMER_BACKUP_SLOTS  10

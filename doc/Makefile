@@ -1,6 +1,6 @@
 -include ../config.mak
 
-manpages = pgbouncer.1 pgbouncer.5
+manpages = pg_ddm.1 pg_ddm.5
 
 dist_man_MANS = $(manpages)
 
@@ -8,7 +8,7 @@ EXTRA_DIST = config.md usage.md Makefile $(manpages) \
 	     frag-config-man.md frag-usage-man.md \
 	     filter.py
 
-CLEANFILES = pgbouncer_1.md pgbouncer_5.md
+CLEANFILES = pg_ddm_1.md pg_ddm_5.md
 
 # make maintainer-clean removes those
 MAINTAINERCLEANFILES = $(manpages)
@@ -19,16 +19,16 @@ include $(abs_top_srcdir)/lib/mk/antimake.mk
 
 export PACKAGE_VERSION
 
-pgbouncer.%: pgbouncer_%.md
+pg_ddm.%: pg_ddm_%.md
 	$(PANDOC) -s -t man -o $@ $<
 
-pgbouncer_1.md: filter.py frag-usage-man.md usage.md
+pg_ddm_1.md: filter.py frag-usage-man.md usage.md
 	$(PYTHON) $^ >$@
 
-pgbouncer_5.md: filter.py frag-config-man.md config.md
+pg_ddm_5.md: filter.py frag-config-man.md config.md
 	$(PYTHON) $^ >$@
 
-.INTERMEDIATE: pgbouncer_1.md pgbouncer_5.md
+.INTERMEDIATE: pg_ddm_1.md pg_ddm_5.md
 
 web:
-	$(MAKE) -C ../../pgbouncer.github.io
+	$(MAKE) -C ../../pg_ddm.github.io

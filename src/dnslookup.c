@@ -1,5 +1,5 @@
 /*
- * PgBouncer - Lightweight connection pooler for PostgreSQL.
+ * pg_ddm - Lightweight connection pooler for PostgreSQL.
  *
  * Copyright (c) 2007-2010  Marko Kreen, Skype Technologies OÜ
  *
@@ -901,7 +901,7 @@ static void impl_launch_query(struct DNSRequest *req)
  * in c-ares repo.
  */
 #if ARES_VERSION <= 0x10A00
-#warning c-ares <=1.10 has buggy IPv6 support; this PgBouncer build will use IPv4 only.
+#warning c-ares <=1.10 has buggy IPv6 support; this pg_ddm build will use IPv4 only.
 	af = AF_INET;
 #else
 	af = AF_UNSPEC;

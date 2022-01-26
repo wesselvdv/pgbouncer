@@ -30,7 +30,7 @@ static SERVICE_STATUS svcStatus = {
  * Also used as placeholder for service handling API's, but it is ignored
  * because our service is defined as WIN32_OWN_PROCESS.
  */
-static char *servicename = "pgbouncer";
+static char *servicename = "pg_ddm";
 
 static char *service_username = NULL;
 static char *service_password = NULL;
@@ -69,7 +69,7 @@ static void win32_setservicestatus(DWORD state)
  * Handle any events sent by the service control manager
  * NOTE! Events are sent on a different thread! And it's
  * not a pthreads thread, so avoid calling anything that
- * may use pthreads - like pgbouncer_log()
+ * may use pthreads - like pg_ddm_log()
  */
 static void WINAPI win32_servicehandler(DWORD request)
 {

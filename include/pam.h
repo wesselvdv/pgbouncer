@@ -1,5 +1,5 @@
 /*
- * PgBouncer - Lightweight connection pooler for PostgreSQL.
+ * pg_ddm - Lightweight connection pooler for PostgreSQL.
  *
  * Copyright (c) 2007-2009  Marko Kreen, Skype Technologies OÜ
  *
@@ -21,7 +21,7 @@
  */
 
 /* Name of the service to be passed to PAM */
-#define PGBOUNCER_PAM_SERVICE "pgbouncer"
+#define pg_ddm_PAM_SERVICE "pg_ddm"
 
 /*
  * Defines how many authentication requests can be placed to the waiting queue.

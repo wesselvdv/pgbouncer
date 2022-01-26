@@ -26,7 +26,7 @@ BOUNCER_LOG=test.log
 BOUNCER_INI=test.ini
 BOUNCER_PID=test.pid
 BOUNCER_PORT=`sed -n '/^listen_port/s/listen_port.*=[^0-9]*//p' $BOUNCER_INI`
-BOUNCER_EXE="$BOUNCER_EXE_PREFIX ../../pgbouncer"
+BOUNCER_EXE="$BOUNCER_EXE_PREFIX ../../pg_ddm"
 
 LOGDIR=log
 PG_PORT=6666
@@ -143,20 +143,20 @@ die() {
 }
 
 admin() {
-	psql -X -h /tmp -U pgbouncer -d pgbouncer -c "$@;" || die "Cannot contact bouncer!"
+	psql -X -h /tmp -U pg_ddm -d pg_ddm -c "$@;" || die "Cannot contact bouncer!"
 }
 
 runtest() {
 	local status
 
 	$BOUNCER_EXE -d $BOUNCER_INI
-	until psql -X -h /tmp -U pgbouncer -d pgbouncer -c "show version" 2>/dev/null 1>&2; do sleep 0.1; done
+	until psql -X -h /tmp -U pg_ddm -d pg_ddm -c "show version" 2>/dev/null 1>&2; do sleep 0.1; done
 
 	printf "`date` running $1 ... "
 	eval $1 >$LOGDIR/$1.out 2>&1
 	status=$?
 
-	# Detect fatal errors from PgBouncer (which are internal
+	# Detect fatal errors from pg_ddm (which are internal
 	# errors), but not those from PostgreSQL (which could be
 	# normal, such as authentication failures)
 	if grep 'FATAL @' $BOUNCER_LOG >> $LOGDIR/$1.out; then

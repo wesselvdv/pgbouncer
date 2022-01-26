@@ -1,5 +1,5 @@
 /*
- * PgBouncer - Lightweight connection pooler for PostgreSQL.
+ * pg_ddm - Lightweight connection pooler for PostgreSQL.
  *
  * Copyright (c) 2007-2009  Marko Kreen, Skype Technologies OÜ
  *
@@ -174,10 +174,15 @@ bool parse_database(void *base, const char *name, const char *connstr)
 	char *connect_query = NULL;
 	char *appname = NULL;
 
+	char *root = NULL;
+	char *role = "master";
+	int route = 0;
+	char *search_path = "public";
+
 	cv.value_p = &pool_mode;
 	cv.extra = (const void *)pool_mode_map;
 
-	if (strcmp(name, "pgbouncer") == 0) {
+	if (strcmp(name, "pg_ddm") == 0) {
 		log_error("database name \"%s\" is reserved", name);
 		return false;
 	}
@@ -204,6 +209,14 @@ bool parse_database(void *base, const char *name, const char *connstr)
 
 		if (strcmp("dbname", key) == 0) {
 			dbname = val;
+		} else if (strcmp("root", key) == 0) {
+			root = val;
+		} else if (strcmp("role", key) == 0) {
+			role = val;
+		} else if (strcmp("route", key) == 0) {
+            route = atoi(val);
+        }  else if (strcmp("search_path", key) == 0) {
+            search_path = val;
 		} else if (strcmp("host", key) == 0) {
 			host = strdup(val);
 			if (!host) {
@@ -260,6 +273,20 @@ bool parse_database(void *base, const char *name, const char *connstr)
 		log_error("cannot create database, no memory?");
 		goto fail;
 	}
+
+	if(root){
+		db->root = strdup(root);
+	}
+
+	if(role){
+		db->role = strdup(role);
+	}
+
+	if(search_path){
+		db->search_path = strdup(search_path);
+	}
+
+	db->route = route;
 
 	/* tag the db as alive */
 	db->db_dead = false;

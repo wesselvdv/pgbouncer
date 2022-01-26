@@ -1,5 +1,5 @@
 /*
- * PgBouncer - Lightweight connection pooler for PostgreSQL.
+ * pg_ddm - Lightweight connection pooler for PostgreSQL.
  *
  * Copyright (c) 2007-2009  Marko Kreen, Skype Technologies OÜ
  *
@@ -34,7 +34,7 @@
 
 static void usage(const char *exe)
 {
-	printf("%s is a connection pooler for PostgreSQL.\n\n", exe);
++	printf("%s is a dynamic data masker and connection pooler for PostgreSQL.\n\n", exe);
 	printf("Usage:\n");
 	printf("  %s [OPTION]... CONFIG_FILE\n", exe);
 	printf("\nOptions:\n");
@@ -169,6 +169,17 @@ char *cf_client_tls_ciphers;
 char *cf_client_tls_dheparams;
 char *cf_client_tls_ecdhecurve;
 
+char *cf_etcd_host;
+char *cf_etcd_port;
+char *cf_etcd_user;
+char *cf_etcd_passwd;
+char *cf_user_regex;
+char *cf_tag_regex;
+char *cf_tag_users;
+int cf_pg_ddm_enabled;
+int cf_pg_ddm_ini_route;
+int cf_pg_ddm_rewrite_route;
+
 int cf_server_tls_sslmode;
 char *cf_server_tls_protocols;
 char *cf_server_tls_ca_file;
@@ -244,7 +255,7 @@ CF_ABS("dns_nxdomain_ttl", CF_TIME_USEC, cf_dns_nxdomain_ttl, 0, "15"),
 CF_ABS("dns_zone_check_period", CF_TIME_USEC, cf_dns_zone_check_period, 0, "0"),
 CF_ABS("idle_transaction_timeout", CF_TIME_USEC, cf_idle_transaction_timeout, 0, "0"),
 CF_ABS("ignore_startup_parameters", CF_STR, cf_ignore_startup_params, 0, ""),
-CF_ABS("job_name", CF_STR, cf_jobname, CF_NO_RELOAD, "pgbouncer"),
+CF_ABS("job_name", CF_STR, cf_jobname, CF_NO_RELOAD, "pg_ddm"),
 CF_ABS("listen_addr", CF_STR, cf_listen_addr, CF_NO_RELOAD, ""),
 CF_ABS("listen_backlog", CF_INT, cf_listen_backlog, CF_NO_RELOAD, "128"),
 CF_ABS("listen_port", CF_INT, cf_listen_port, CF_NO_RELOAD, "6432"),
@@ -283,6 +294,18 @@ CF_ABS("server_tls_ciphers", CF_STR, cf_server_tls_ciphers, 0, "fast"),
 CF_ABS("server_tls_key_file", CF_STR, cf_server_tls_key_file, 0, ""),
 CF_ABS("server_tls_protocols", CF_STR, cf_server_tls_protocols, 0, "secure"),
 CF_ABS("server_tls_sslmode", CF_LOOKUP(sslmode_map), cf_server_tls_sslmode, 0, "disable"),
+
+CF_ABS("etcd_host", CF_STR, cf_etcd_host, CF_NO_RELOAD, ""),
+CF_ABS("etcd_port", CF_STR, cf_etcd_port, CF_NO_RELOAD, ""),
+CF_ABS("etcd_user", CF_STR, cf_etcd_user, CF_NO_RELOAD, ""),
+CF_ABS("etcd_passwd", CF_STR, cf_etcd_passwd, CF_NO_RELOAD, ""),
+CF_ABS("user_regex", CF_STR, cf_user_regex, CF_NO_RELOAD, ""),
+CF_ABS("tag_regex", CF_STR, cf_tag_regex, CF_NO_RELOAD, ""),
+CF_ABS("tag_users", CF_STR, cf_tag_users, CF_NO_RELOAD, ""),
+CF_ABS("pg_ddm_enabled", CF_INT, cf_pg_ddm_enabled, CF_NO_RELOAD, "1"),
+CF_ABS("pg_ddm_ini_route", CF_INT, cf_pg_ddm_ini_route, CF_NO_RELOAD, "0"),
+CF_ABS("pg_ddm_rewrite_route", CF_INT, cf_pg_ddm_rewrite_route, CF_NO_RELOAD, "0"),
+
 #ifdef WIN32
 CF_ABS("service_name", CF_STR, cf_jobname, CF_NO_RELOAD, NULL), /* alias for job_name */
 #endif
@@ -292,7 +315,7 @@ CF_ABS("stats_users", CF_STR, cf_stats_users, 0, ""),
 CF_ABS("suspend_timeout", CF_TIME_USEC, cf_suspend_timeout, 0, "10"),
 CF_ABS("syslog", CF_INT, cf_syslog, 0, "0"),
 CF_ABS("syslog_facility", CF_STR, cf_syslog_facility, 0, "daemon"),
-CF_ABS("syslog_ident", CF_STR, cf_syslog_ident, 0, "pgbouncer"),
+CF_ABS("syslog_ident", CF_STR, cf_syslog_ident, 0, "pg_ddm"),
 CF_ABS("tcp_defer_accept", DEFER_OPS, cf_tcp_defer_accept, 0, NULL),
 CF_ABS("tcp_keepalive", CF_INT, cf_tcp_keepalive, 0, "1"),
 CF_ABS("tcp_keepcnt", CF_INT, cf_tcp_keepcnt, 0, "0"),
@@ -315,7 +338,7 @@ CF_ABS("verbose", CF_INT, cf_verbose, 0, NULL),
 
 static const struct CfSect config_sects [] = {
 	{
-		.sect_name = "pgbouncer",
+		.sect_name = "pg_ddm",
 		.key_list = bouncer_params,
 	}, {
 		.sect_name = "databases",
@@ -332,7 +355,7 @@ static struct CfContext main_config = { config_sects, };
 
 bool set_config_param(const char *key, const char *val)
 {
-	return cf_set(&main_config, "pgbouncer", key, val);
+	return cf_set(&main_config, "pg_ddm", key, val);
 }
 
 void config_for_each(void (*param_cb)(void *arg, const char *name, const char *val, const char *defval, bool reloadable),
@@ -345,7 +368,7 @@ void config_for_each(void (*param_cb)(void *arg, const char *name, const char *v
 	int ro = CF_NO_RELOAD | CF_READONLY;
 
 	for (; k->key_name; k++) {
-		val = cf_get(&main_config, "pgbouncer", k->key_name, buf, sizeof(buf));
+		val = cf_get(&main_config, "pg_ddm", k->key_name, buf, sizeof(buf));
 		reloadable = (k->flags & ro) == 0;
 		param_cb(arg, k->key_name, val, k->def_value, reloadable);
 	}
@@ -846,6 +869,14 @@ static void cleanup(void)
 	xfree(&cf_server_tls_key_file);
 	xfree(&cf_server_tls_ciphers);
 
+    xfree(&cf_etcd_host);
+    xfree(&cf_etcd_port);
+    xfree(&cf_etcd_user);
+    xfree(&cf_etcd_passwd);
+    xfree(&cf_user_regex);
+    xfree(&cf_tag_regex);
+    xfree(&cf_tag_users);
+
 	xfree((char **)&cf_logfile);
 	xfree((char **)&cf_syslog_ident);
 	xfree((char **)&cf_syslog_facility);
@@ -937,7 +968,7 @@ int main(int argc, char *argv[])
 
 	/* disallow running as root */
 	if (getuid() == 0)
-		die("PgBouncer should not run as root");
+		die("pg_ddm should not run as root");
 
 	admin_setup();
 

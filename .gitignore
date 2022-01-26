@@ -6,7 +6,7 @@
 /config.sub
 /configure
 /install-sh
-/pgbouncer
+/pg_ddm
 /.objs
 /tags
 /test/.objs

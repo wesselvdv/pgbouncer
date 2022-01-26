@@ -1,11 +1,11 @@
 #!/bin/bash
 #
-# pgbouncer	Start the PgBouncer PostgreSQL pooler.
+# pg_ddm	Start the pg_ddm PostgreSQL pooler.
 #
 # The variables below are NOT to be changed.  They are there to make the
 # script more readable.
 
-NAME=pgbouncer
+NAME=pg_ddm
 DAEMON=/usr/bin/$NAME
 PIDFILE=/var/run/$NAME.pid
 CONF=/etc/$NAME.ini

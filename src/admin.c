@@ -1,5 +1,5 @@
 /*
- * PgBouncer - Lightweight connection pooler for PostgreSQL.
+ * pg_ddm - Lightweight connection pooler for PostgreSQL.
  *
  * Copyright (c) 2007-2009  Marko Kreen, Skype Technologies OÜ
  *
@@ -1489,7 +1489,7 @@ bool admin_handle_client(PgSocket *admin, PktHdr *pkt)
 
 /**
  * Client is unauthenticated, look if it wants to connect
- * to special "pgbouncer" user.
+ * to special "pg_ddm" user.
  */
 bool admin_pre_login(PgSocket *client, const char *username)
 {
@@ -1504,12 +1504,12 @@ bool admin_pre_login(PgSocket *client, const char *username)
 
 		res = getpeereid(sbuf_socket(&client->sbuf), &peer_uid, &peer_gid);
 		if (res >= 0 && peer_uid == getuid()
-			&& strcmp("pgbouncer", username) == 0)
+			&& strcmp("pg_ddm", username) == 0)
 		{
 			client->login_user = admin_pool->db->forced_user;
 			client->own_user = true;
 			client->admin_user = true;
-			slog_info(client, "pgbouncer access from unix socket");
+			slog_info(client, "pg_ddm access from unix socket");
 			return true;
 		}
 	}
@@ -1559,7 +1559,7 @@ void admin_setup(void)
 	int res;
 
 	/* fake database */
-	db = add_database("pgbouncer");
+	db = add_database("pg_ddm");
 	if (!db)
 		die("no memory for admin database");
 
@@ -1567,8 +1567,8 @@ void admin_setup(void)
 	db->pool_size = 2;
 	db->admin = true;
 	db->pool_mode = POOL_STMT;
-	if (!force_user(db, "pgbouncer", ""))
-		die("no mem on startup - cannot alloc pgbouncer user");
+	if (!force_user(db, "pg_ddm", ""))
+		die("no mem on startup - cannot alloc pg_ddm user");
 
 	/* fake pool */
 	pool = get_pool(db, db->forced_user);
@@ -1577,10 +1577,10 @@ void admin_setup(void)
 	admin_pool = pool;
 
 	/* user */
-	user = find_user("pgbouncer");
+	user = find_user("pg_ddm");
 	if (!user) {
 		/* fake user with disabled psw */
-		user = add_user("pgbouncer", "");
+		user = add_user("pg_ddm", "");
 		if (!user)
 			die("cannot create admin user?");
 	}
@@ -1609,7 +1609,7 @@ void admin_setup(void)
 		die("cannot create admin startup pkt");
 	db->startup_params = msg;
 	pktbuf_put_string(msg, "database");
-	db->dbname = "pgbouncer";
+	db->dbname = "pg_ddm";
 	pktbuf_put_string(msg, db->dbname);
 
 	/* initialize regexes */

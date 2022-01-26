@@ -1,7 +1,7 @@
 Tests
 =====
 
-Various ways to test PgBouncer:
+Various ways to test pg_ddm:
 
 - `test.sh`
 
@@ -37,8 +37,8 @@ Various ways to test PgBouncer:
 - `run-conntest.sh`
 
     This is a more complex setup that continuously runs queries
-    through PgBouncer while messing around with the network, checking
-    whether PgBouncer correctly reconnects and all the queries get
+    through pg_ddm while messing around with the network, checking
+    whether pg_ddm correctly reconnects and all the queries get
     processed.  First, run `make asynctest` to build, then see
     `run-conntest.sh` how to run the different pieces.
 

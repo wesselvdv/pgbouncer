@@ -1,5 +1,5 @@
 /*
- * PgBouncer - Lightweight connection pooler for PostgreSQL.
+ * pg_ddm - Lightweight connection pooler for PostgreSQL.
  *
  * Copyright (c) 2007-2009  Marko Kreen, Skype Technologies OÜ
  *
@@ -358,7 +358,7 @@ bool takeover_login(PgSocket *bouncer)
 /* launch connection to running process */
 void takeover_init(void)
 {
-	PgDatabase *db = find_database("pgbouncer");
+	PgDatabase *db = find_database("pg_ddm");
 	PgPool *pool = get_pool(db, db->forced_user);
 
 	if (!pool)

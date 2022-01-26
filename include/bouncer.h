@@ -1,5 +1,5 @@
 /*
- * PgBouncer - Lightweight connection pooler for PostgreSQL.
+ * pg_ddm - Lightweight connection pooler for PostgreSQL.
  *
  * Copyright (c) 2007-2009  Marko Kreen, Skype Technologies OÜ
  *
@@ -102,6 +102,9 @@ typedef struct PktHdr PktHdr;
 typedef struct ScramState ScramState;
 
 extern int cf_sbuf_len;
+
+#include "rubycall.h"
+#include "rewrite_query.h"
 
 #include "util.h"
 #include "iobuf.h"
@@ -376,6 +379,11 @@ struct PgDatabase {
 	int connection_count;	/* total connections for this database in all pools */
 
 	struct AATree user_tree;	/* users that have been queried on this database */
+
+	char *role;
+    char *root;
+    int route;
+    char *search_path;
 };
 
 
@@ -556,6 +564,17 @@ extern char *cf_client_tls_key_file;
 extern char *cf_client_tls_ciphers;
 extern char *cf_client_tls_dheparams;
 extern char *cf_client_tls_ecdhecurve;
+
+extern char *cf_etcd_host;
+extern char *cf_etcd_port;
+extern char *cf_etcd_user;
+extern char *cf_etcd_passwd;
+extern char *cf_user_regex;
+extern char *cf_tag_regex;
+extern char *cf_tag_users;
+extern int cf_pg_ddm_enabled;
+extern int cf_pg_ddm_ini_route;
+extern int cf_pg_ddm_rewrite_route;
 
 extern int cf_server_tls_sslmode;
 extern char *cf_server_tls_protocols;

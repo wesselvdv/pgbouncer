@@ -16,7 +16,7 @@ BOUNCER_LOG=test.log
 BOUNCER_INI=test.ini
 BOUNCER_PID=test.pid
 BOUNCER_PORT=`sed -n '/^listen_port/s/listen_port.*=[^0-9]*//p' $BOUNCER_INI`
-BOUNCER_EXE="$BOUNCER_EXE_PREFIX ../pgbouncer"
+BOUNCER_EXE="$BOUNCER_EXE_PREFIX ../pg_ddm"
 
 BOUNCER_ADMIN_HOST=/tmp
 
@@ -35,9 +35,9 @@ command -v initdb > /dev/null || {
 	exit 1
 }
 
-# The tests require that psql can connect to the PgBouncer admin
+# The tests require that psql can connect to the pg_ddm admin
 # console.  On platforms that have getpeereid(), this works by
-# connecting as user pgbouncer over the Unix socket.  On other
+# connecting as user pg_ddm over the Unix socket.  On other
 # platforms, we have to rely on "trust" authentication, but then we
 # have to skip any tests that use authentication methods other than
 # "trust".
@@ -80,7 +80,7 @@ if ! $use_unix_sockets; then
 
 	cp test.ini test.ini.bak
 	sed -i 's/^unix_socket_dir =/#&/' test.ini
-	echo 'admin_users = pgbouncer' >> test.ini
+	echo 'admin_users = pg_ddm' >> test.ini
 fi
 
 MAX_PASSWORD=$(sed -n $SED_ERE_OP 's/#define MAX_PASSWORD[[:space:]]+([0-9]+)/\1/p' ../include/bouncer.h)
@@ -96,11 +96,11 @@ fi
 if test -n "$USE_SUDO"; then
 	case `uname` in
 	OpenBSD)
-		sudo pfctl -a pgbouncer -F all -q 2>&1 | grep -q "pfctl:" && {
+		sudo pfctl -a pg_ddm -F all -q 2>&1 | grep -q "pfctl:" && {
 			cat <<-EOF
 			Please enable PF and add the following rule to /etc/pf.conf
 			
-			  anchor "pgbouncer/*"
+			  anchor "pg_ddm/*"
 			
 			EOF
 			exit 1
@@ -172,7 +172,7 @@ psql -X -p $PG_PORT -l | grep p0 > /dev/null || {
 
 psql -X -p $PG_PORT -d p0 -c "select * from pg_user" | grep pswcheck > /dev/null || {
 	echo "Creating users"
-	psql -X -o /dev/null -p $PG_PORT -c "create user pswcheck with superuser createdb password 'pgbouncer-check';" p0 || exit 1
+	psql -X -o /dev/null -p $PG_PORT -c "create user pswcheck with superuser createdb password 'pg_ddm-check';" p0 || exit 1
 	psql -X -o /dev/null -p $PG_PORT -c "create user someuser with password 'anypasswd';" p0 || exit 1
 	psql -X -o /dev/null -p $PG_PORT -c "create user maxedout;" p0 || exit 1
 	psql -X -o /dev/null -p $PG_PORT -c "create user longpass with password '$long_password';" p0 || exit 1
@@ -220,7 +220,7 @@ fw_drop_port() {
 		    | sudo pfctl -f -;;
 	OpenBSD)
 		echo "block drop out proto tcp from any to 127.0.0.1 port $1" \
-		    | sudo pfctl -a pgbouncer -f -;;
+		    | sudo pfctl -a pg_ddm -f -;;
 	*)
 		echo "Unknown OS"; exit 1;;
 	esac
@@ -235,7 +235,7 @@ fw_reject_port() {
 		    | sudo pfctl -f -;;
 	OpenBSD)
 		echo "block return-rst out proto tcp from any to 127.0.0.1 port $1" \
-		    | sudo pfctl -a pgbouncer -f -;;
+		    | sudo pfctl -a pg_ddm -f -;;
 	*)
 		echo "Unknown OS"; exit 1;;
 	esac
@@ -249,7 +249,7 @@ fw_reset() {
 	Darwin)
 		sudo pfctl -F all;;
 	OpenBSD)
-		sudo pfctl -a pgbouncer -F all;;
+		sudo pfctl -a pg_ddm -F all;;
 	*)
 		echo "Unknown OS"; exit 1;;
 	esac
@@ -274,7 +274,7 @@ die() {
 }
 
 admin() {
-	psql -X -h $BOUNCER_ADMIN_HOST -U pgbouncer -d pgbouncer -c "$@;" || die "Cannot contact bouncer!"
+	psql -X -h $BOUNCER_ADMIN_HOST -U pg_ddm -d pg_ddm -c "$@;" || die "Cannot contact bouncer!"
 }
 
 runtest() {
@@ -288,13 +288,13 @@ runtest() {
 		$BOUNCER_EXE -d $BOUNCER_INI
 		;;
 	esac
-	until psql -X -h $BOUNCER_ADMIN_HOST -U pgbouncer -d pgbouncer -c "show version" 2>/dev/null 1>&2; do sleep 0.1; done
+	until psql -X -h $BOUNCER_ADMIN_HOST -U pg_ddm -d pg_ddm -c "show version" 2>/dev/null 1>&2; do sleep 0.1; done
 
 	printf "`date` running $1 ... "
 	eval $1 >$LOGDIR/$1.out 2>&1
 	status=$?
 
-	# Detect fatal errors from PgBouncer (which are internal
+	# Detect fatal errors from pg_ddm (which are internal
 	# errors), but not those from PostgreSQL (which could be
 	# normal, such as authentication failures)
 	if grep 'FATAL @' $BOUNCER_LOG >> $LOGDIR/$1.out; then
@@ -317,7 +317,7 @@ runtest() {
 
 	case `uname` in
 	MINGW*)
-		psql -X -h $BOUNCER_ADMIN_HOST -U pgbouncer -d pgbouncer -c "shutdown;" 2>/dev/null
+		psql -X -h $BOUNCER_ADMIN_HOST -U pg_ddm -d pg_ddm -c "shutdown;" 2>/dev/null
 		sleep 1
 		;;
 	*)
@@ -332,7 +332,7 @@ runtest() {
 # show version and --version
 test_show_version() {
 	v1=$($BOUNCER_EXE --version | head -n 1) || return 1
-	v2=$(psql -X -tAq -h $BOUNCER_ADMIN_HOST -U pgbouncer -d pgbouncer -c "show version;") || return 1
+	v2=$(psql -X -tAq -h $BOUNCER_ADMIN_HOST -U pg_ddm -d pg_ddm -c "show version;") || return 1
 
 	echo "v1=$v1"
 	echo "v2=$v2"
@@ -349,10 +349,10 @@ test_show_version() {
 test_show() {
 	for what in clients config databases fds help lists pools servers sockets active_sockets stats stats_totals stats_averages users totals mem dns_hosts dns_zones; do
 		    echo "=> show $what;"
-		    psql -X -h $BOUNCER_ADMIN_HOST -U pgbouncer -d pgbouncer -c "show $what;" || return 1
+		    psql -X -h $BOUNCER_ADMIN_HOST -U pg_ddm -d pg_ddm -c "show $what;" || return 1
 	done
 
-	psql -X -h $BOUNCER_ADMIN_HOST -U pgbouncer -d pgbouncer -c "show bogus;" && return 1
+	psql -X -h $BOUNCER_ADMIN_HOST -U pg_ddm -d pg_ddm -c "show bogus;" && return 1
 
 	return 0
 }
@@ -725,7 +725,7 @@ test_suspend_resume() {
 	done &
 
 	for i in {1..5}; do
-		psql -X -h $BOUNCER_ADMIN_HOST -p $BOUNCER_PORT -d pgbouncer -U pgbouncer <<-PSQL_EOF
+		psql -X -h $BOUNCER_ADMIN_HOST -p $BOUNCER_PORT -d pg_ddm -U pg_ddm <<-PSQL_EOF
 		suspend;
 		\! sleep 1
 		resume;
@@ -893,7 +893,7 @@ test_auth_user() {
 	return 0
 }
 
-# test plain-text password authentication from PgBouncer to PostgreSQL server
+# test plain-text password authentication from pg_ddm to PostgreSQL server
 #
 # The PostgreSQL server no longer supports storing plain-text
 # passwords, so the server-side user actually uses md5 passwords in
@@ -917,7 +917,7 @@ test_password_server() {
 	return 0
 }
 
-# test plain-text password authentication from client to PgBouncer
+# test plain-text password authentication from client to pg_ddm
 test_password_client() {
 	$have_getpeereid || return 77
 
@@ -953,7 +953,7 @@ test_password_client() {
 	return 0
 }
 
-# test md5 authentication from PgBouncer to PostgreSQL server
+# test md5 authentication from pg_ddm to PostgreSQL server
 test_md5_server() {
 	admin "set auth_type='trust'"
 
@@ -970,7 +970,7 @@ test_md5_server() {
 	return 0
 }
 
-# test md5 authentication from client to PgBouncer
+# test md5 authentication from client to pg_ddm
 test_md5_client() {
 	$have_getpeereid || return 77
 
@@ -995,7 +995,7 @@ test_md5_client() {
 	return 0
 }
 
-# test SCRAM authentication from PgBouncer to PostgreSQL server
+# test SCRAM authentication from pg_ddm to PostgreSQL server
 test_scram_server() {
 	$pg_supports_scram || return 77
 
@@ -1014,7 +1014,7 @@ test_scram_server() {
 	return 0
 }
 
-# test SCRAM authentication from client to PgBouncer
+# test SCRAM authentication from client to pg_ddm
 test_scram_client() {
 	$have_getpeereid || return 77
 	$pg_supports_scram || return 77
@@ -1055,7 +1055,7 @@ test_scram_client() {
 	return 0
 }
 
-# test SCRAM authentication from client to PgBouncer and on to server
+# test SCRAM authentication from client to pg_ddm and on to server
 test_scram_both() {
 	$have_getpeereid || return 77
 	$pg_supports_scram || return 77

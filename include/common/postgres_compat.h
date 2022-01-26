@@ -1,6 +1,6 @@
 /*
  * Various things to allow source files from postgresql code to be
- * used in pgbouncer.  pgbouncer's system.h needs to be included
+ * used in pg_ddm.  pg_ddm's system.h needs to be included
  * before this.
  */
 

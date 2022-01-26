@@ -1,5 +1,5 @@
 /*
- * PgBouncer - Lightweight connection pooler for PostgreSQL.
+ * pg_ddm - Lightweight connection pooler for PostgreSQL.
  *
  * Copyright (c) 2007-2009  Marko Kreen, Skype Technologies OÜ
  *
@@ -382,7 +382,7 @@ static bool handle_server_work(PgSocket *server, PktHdr *pkt)
 			 *
 			 * For pipelined overlapping commands, we wait until
 			 * the last command is done (expect_rfq_count==0).
-			 * That means, we count the time that PgBouncer is
+			 * That means, we count the time that pg_ddm is
 			 * occupied in a query or transaction, not the total
 			 * time that all queries/transactions take
 			 * individually.  For that, we would have to track the

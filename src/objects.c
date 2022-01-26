@@ -1,5 +1,5 @@
 /*
- * PgBouncer - Lightweight connection pooler for PostgreSQL.
+ * pg_ddm - Lightweight connection pooler for PostgreSQL.
  *
  * Copyright (c) 2007-2009  Marko Kreen, Skype Technologies OÜ
  *
@@ -475,6 +475,29 @@ PgDatabase *find_database(const char *name)
 	return NULL;
 }
 
+/* select routing database */
+PgDatabase *find_routing_database(const char *name, const char *type, int server_number)
+{
+	struct List *item;
+	int count = 1;
+	int number = 0;
+	PgDatabase *db;
+	statlist_for_each(item, &database_list) {
+		db = container_of(item, PgDatabase, head);
+		if (db->root != NULL && strcmp(db->root, name) == 0 && (strcmp(db->role, type) == 0 || strcmp("read", type) == 0)) {
+			if (server_number > 0 && count == server_number) {
+				log_debug("Selected Database: %s", db->name);
+				return db;
+			}
+			count = count + 1;
+		}
+	}
+	number = rand();
+	if(count > 1)
+		return find_routing_database(name, type, number % count);
+	return NULL;
+}
+
 /* find existing user */
 PgUser *find_user(const char *name)
 {
@@ -584,9 +607,10 @@ bool check_fast_fail(PgSocket *client)
 	int cnt;
 	PgPool *pool = client->pool;
 
-	/* Could be mock authentication, proceed normally */
-	if (!pool)
-		return true;
+	if ( !pool ) {
+	    disconnect_client(client, true, "login rejected");
+	    return false;
+	}
 
 	/* If last login succeeded, client can go ahead. */
 	if (!pool->last_login_failed)
@@ -598,7 +622,7 @@ bool check_fast_fail(PgSocket *client)
 		return true;
 
 	/* Else we fail the client. */
-	disconnect_client(client, true, "pgbouncer cannot connect to server");
+	disconnect_client(client, true, "pg_ddm cannot connect to server");
 
 	/*
 	 * Try to launch a new connection.  (launch_new_connection()
@@ -1624,7 +1648,7 @@ void tag_pool_dirty(PgPool *pool)
 
 	/*
 	 * Don't tag the admin pool as dirty, since this is not an actual postgres
-	 * server. Marking it as dirty breaks connecting to the pgbouncer admin
+	 * server. Marking it as dirty breaks connecting to the pg_ddm admin
 	 * database on future connections.
 	 */
 	if (pool->db->admin)

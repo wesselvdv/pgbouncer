@@ -1,16 +1,16 @@
-PgBouncer
+pg_ddm
 =========
 
 Lightweight connection pooler for PostgreSQL.
 
-Homepage: <https://www.pgbouncer.org/>
+Homepage: <https://www.pg_ddm.org/>
 
-Sources, bug tracking: <https://github.com/pgbouncer/pgbouncer>
+Sources, bug tracking: <https://github.com/pg_ddm/pg_ddm>
 
 Building
 ---------
 
-PgBouncer depends on few things to get compiled:
+pg_ddm depends on few things to get compiled:
 
 * [GNU Make] 3.81+
 * [Libevent] 2.0+
@@ -37,7 +37,7 @@ separate build instructions below.
 DNS lookup support
 ------------------
 
-PgBouncer does host name lookups at connect time instead of just once
+pg_ddm does host name lookups at connect time instead of just once
 at configuration load time.  This requires an asynchronous DNS
 implementation.  The following table shows supported backends and
 their probing order:
@@ -79,18 +79,18 @@ systemd integration
 
 To enable systemd integration, use the `configure` option
 `--with-systemd`.  This allows using `Type=notify` service units as
-well as socket activation.  See `etc/pgbouncer.service` and
-`etc/pgbouncer.socket` for examples.
+well as socket activation.  See `etc/pg_ddm.service` and
+`etc/pg_ddm.socket` for examples.
 
 Building from Git
 -----------------
 
-Building PgBouncer from Git requires that you fetch the libusual
+Building pg_ddm from Git requires that you fetch the libusual
 submodule and generate the header and configuration files before
 you can run `configure`:
 
-	$ git clone https://github.com/pgbouncer/pgbouncer.git
-	$ cd pgbouncer
+	$ git clone https://github.com/pg_ddm/pg_ddm.git
+	$ cd pg_ddm
 	$ git submodule init
 	$ git submodule update
 	$ ./autogen.sh
@@ -121,14 +121,14 @@ Running on Windows
 Running from the command line goes as usual, except that the `-d` (daemonize),
 `-R` (reboot), and `-u` (switch user) switches will not work.
 
-To run PgBouncer as a Windows service, you need to configure the
+To run pg_ddm as a Windows service, you need to configure the
 `service_name` parameter to set a name for the service.  Then:
 
-	$ pgbouncer -regservice config.ini
+	$ pg_ddm -regservice config.ini
 
 To uninstall the service:
 
-	$ pgbouncer -unregservice config.ini
+	$ pg_ddm -unregservice config.ini
 
 To use the Windows event log, set `syslog = 1` in the configuration file.
 But before that, you need to register `pgbevent.dll`:

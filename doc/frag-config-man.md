@@ -1,5 +1,5 @@
-% PGBOUNCER.INI(5) @PACKAGE_VERSION@ | Databases
+% pg_ddm.INI(5) @PACKAGE_VERSION@ | Databases
 
 ## Name
 
-pgbouncer.ini - configuration file for pgbouncer
+pg_ddm.ini - configuration file for pg_ddm

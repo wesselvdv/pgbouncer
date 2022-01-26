@@ -1,33 +1,33 @@
-# pgbouncer
+# pg_ddm
 
 
 ## Synopsis
 
-    pgbouncer [-d][-R][-v][-u user] <pgbouncer.ini>
-    pgbouncer -V|-h
+    pg_ddm [-d][-R][-v][-u user] <pg_ddm.ini>
+    pg_ddm -V|-h
 
 On Windows, the options are:
 
-    pgbouncer.exe [-v][-u user] <pgbouncer.ini>
-    pgbouncer.exe -V|-h
+    pg_ddm.exe [-v][-u user] <pg_ddm.ini>
+    pg_ddm.exe -V|-h
 
 Additional options for setting up a Windows service:
 
-    pgbouncer.exe --regservice   <pgbouncer.ini>
-    pgbouncer.exe --unregservice <pgbouncer.ini>
+    pg_ddm.exe --regservice   <pg_ddm.ini>
+    pg_ddm.exe --unregservice <pg_ddm.ini>
 
 ## Description
 
-**pgbouncer** is a PostgreSQL connection pooler. Any target application
-can be connected to **pgbouncer** as if it were a PostgreSQL server,
-and **pgbouncer** will create a connection to the actual server, or it
+**pg_ddm** is a PostgreSQL connection pooler. Any target application
+can be connected to **pg_ddm** as if it were a PostgreSQL server,
+and **pg_ddm** will create a connection to the actual server, or it
 will reuse one of its existing connections.
 
-The aim of **pgbouncer** is to lower the performance impact of opening
+The aim of **pg_ddm** is to lower the performance impact of opening
 new connections to PostgreSQL.
 
 In order not to compromise transaction semantics for connection
-pooling, **pgbouncer** supports several types of pooling when
+pooling, **pg_ddm** supports several types of pooling when
 rotating connections:
 
 Session pooling
@@ -40,7 +40,7 @@ Session pooling
 Transaction pooling
 
 :   A server connection is assigned to a client only during a transaction.
-    When PgBouncer notices that transaction is over, the server connection
+    When pg_ddm notices that transaction is over, the server connection
     will be put back into the pool.
 
 Statement pooling
@@ -49,46 +49,46 @@ Statement pooling
     pool immediately after a query completes. Multi-statement
     transactions are disallowed in this mode as they would break.
 
-The administration interface of **pgbouncer** consists of some new
+The administration interface of **pg_ddm** consists of some new
 `SHOW` commands available when connected to a special "virtual"
-database **pgbouncer**.
+database **pg_ddm**.
 
 ## Quick-start
 
 Basic setup and usage is as follows.
 
-1. Create a pgbouncer.ini file.  Details in **pgbouncer(5)**.  Simple example:
+1. Create a pg_ddm.ini file.  Details in **pg_ddm(5)**.  Simple example:
 
         [databases]
         template1 = host=localhost port=5432 dbname=template1
 
-        [pgbouncer]
+        [pg_ddm]
         listen_port = 6432
         listen_addr = localhost
         auth_type = md5
         auth_file = userlist.txt
-        logfile = pgbouncer.log
-        pidfile = pgbouncer.pid
+        logfile = pg_ddm.log
+        pidfile = pg_ddm.pid
         admin_users = someuser
 
 2. Create a `userlist.txt` file that contains the users allowed in:
 
         "someuser" "same_password_as_in_server"
 
-3. Launch **pgbouncer**:
+3. Launch **pg_ddm**:
 
-        $ pgbouncer -d pgbouncer.ini
+        $ pg_ddm -d pg_ddm.ini
 
 4. Have your application (or the **psql** client) connect to
-   **pgbouncer** instead of directly to the PostgreSQL server:
+   **pg_ddm** instead of directly to the PostgreSQL server:
 
         $ psql -p 6432 -U someuser template1
 
-5. Manage **pgbouncer** by connecting to the special administration
-   database **pgbouncer** and issuing `SHOW HELP;` to begin:
+5. Manage **pg_ddm** by connecting to the special administration
+   database **pg_ddm** and issuing `SHOW HELP;` to begin:
 
-        $ psql -p 6432 -U someuser pgbouncer
-        pgbouncer=# SHOW HELP;
+        $ psql -p 6432 -U someuser pg_ddm
+        pg_ddm=# SHOW HELP;
         NOTICE:  Console usage
         DETAIL:
           SHOW [HELP|CONFIG|DATABASES|FDS|POOLS|CLIENTS|SERVERS|SOCKETS|LISTS|VERSION|...]
@@ -100,9 +100,9 @@ Basic setup and usage is as follows.
           SHUTDOWN
           [...]
 
-6. If you made changes to the pgbouncer.ini file, you can reload it with:
+6. If you made changes to the pg_ddm.ini file, you can reload it with:
 
-        pgbouncer=# RELOAD;
+        pg_ddm=# RELOAD;
 
 ## Command line switches
 
@@ -113,7 +113,7 @@ Basic setup and usage is as follows.
     is required.  No log messages will be written to stderr after
     going into the background.
 
-    Note: Does not work on Windows; **pgbouncer** need to run as service there.
+    Note: Does not work on Windows; **pg_ddm** need to run as service there.
 
 `-R`, `--reboot`
 :   Do an online restart. That means connecting to the running process,
@@ -141,7 +141,7 @@ Basic setup and usage is as follows.
 :   Show short help.
 
 `--regservice`
-:   Win32: Register pgbouncer to run as Windows service.  The **service_name**
+:   Win32: Register pg_ddm to run as Windows service.  The **service_name**
     configuration parameter value is used as the name to register under.
 
 `--unregservice`
@@ -150,15 +150,15 @@ Basic setup and usage is as follows.
 ## Admin console
 
 The console is available by connecting as normal to the
-database **pgbouncer**:
+database **pg_ddm**:
 
-    $ psql -p 6432 pgbouncer
+    $ psql -p 6432 pg_ddm
 
 Only users listed in the configuration parameters **admin_users** or **stats_users**
 are allowed to log in to the console.  (Except when `auth_type=any`, then
 any user is allowed in as a stats_user.)
 
-Additionally, the user name **pgbouncer** is allowed to log in without password,
+Additionally, the user name **pg_ddm** is allowed to log in without password,
 if the login comes via the Unix socket and the client has same Unix user UID
 as the running process.
 
@@ -175,24 +175,24 @@ database
 :   Statistics are presented per database.
 
 total_xact_count
-:   Total number of SQL transactions pooled by **pgbouncer**.
+:   Total number of SQL transactions pooled by **pg_ddm**.
 
 total_query_count
-:   Total number of SQL queries pooled by **pgbouncer**.
+:   Total number of SQL queries pooled by **pg_ddm**.
 
 total_received
-:   Total volume in bytes of network traffic received by **pgbouncer**.
+:   Total volume in bytes of network traffic received by **pg_ddm**.
 
 total_sent
-:   Total volume in bytes of network traffic sent by **pgbouncer**.
+:   Total volume in bytes of network traffic sent by **pg_ddm**.
 
 total_xact_time
-:   Total number of microseconds spent by **pgbouncer** when connected
+:   Total number of microseconds spent by **pg_ddm** when connected
     to PostgreSQL in a transaction, either idle in transaction or
     executing queries.
 
 total_query_time
-:   Total number of microseconds spent by **pgbouncer** when actively
+:   Total number of microseconds spent by **pg_ddm** when actively
     connected to PostgreSQL, executing queries.
 
 total_wait_time
@@ -239,13 +239,13 @@ type
 :   S, for server.
 
 user
-:   User name **pgbouncer** uses to connect to server.
+:   User name **pg_ddm** uses to connect to server.
 
 database
 :   Database name.
 
 state
-:   State of the pgbouncer server connection, one of **active**,
+:   State of the pg_ddm server connection, one of **active**,
     **idle**, **used**, **tested**, **new**.
 
 addr
@@ -289,7 +289,7 @@ remote_pid
     Unix socket and OS supports getting process ID info, its
     OS PID.  Otherwise it's extracted from cancel packet the server sent,
     which should be the PID in case the server is PostgreSQL, but it's a random
-    number in case the server it is another PgBouncer.
+    number in case the server it is another pg_ddm.
 
 tls
 :   A string with TLS connection information, or empty if not using TLS.
@@ -451,17 +451,17 @@ name
 :   Name of configured database entry.
 
 host
-:   Host pgbouncer connects to.
+:   Host pg_ddm connects to.
 
 port
-:   Port pgbouncer connects to.
+:   Port pg_ddm connects to.
 
 database
-:   Actual database name pgbouncer connects to.
+:   Actual database name pg_ddm connects to.
 
 force_user
 :   When the user is part of the connection string, the connection between
-    pgbouncer and PostgreSQL is forced to the given user, whatever the
+    pg_ddm and PostgreSQL is forced to the given user, whatever the
     client user.
 
 pool_size
@@ -493,13 +493,13 @@ disabled
 
 Internal command - shows list of file descriptors in use with internal state attached to them.
 
-When the connected user has the user name "pgbouncer", connects through the Unix socket
+When the connected user has the user name "pg_ddm", connects through the Unix socket
 and has same the UID as the running process, the actual FDs are passed over the connection.
 This mechanism is used to do an online restart.
 Note: This does not work on Windows.
 
 This command also blocks the internal event loop, so it should not be used
-while PgBouncer is in use.
+while pg_ddm is in use.
 
 fd
 :   File descriptor numeric value.
@@ -586,14 +586,14 @@ count
 
 #### SHOW VERSION
 
-Show the PgBouncer version string.
+Show the pg_ddm version string.
 
 
 ### Process controlling commands
 
 #### PAUSE [db]
 
-PgBouncer tries to disconnect from all servers, first waiting for all queries
+pg_ddm tries to disconnect from all servers, first waiting for all queries
 to complete. The command will not return before all queries are finished.  To be used
 at the time of database restart.
 
@@ -621,10 +621,10 @@ settings.
 This command is useful when the server connection setup has changed,
 for example to perform a gradual switchover to a new server.  It is
 *not* necessary to run this command when the connection string in
-pgbouncer.ini has been changed and reloaded (see **RELOAD**) or when
+pg_ddm.ini has been changed and reloaded (see **RELOAD**) or when
 DNS resolution has changed, because then the equivalent of this
 command will be run automatically.  This command is only necessary if
-something downstream of PgBouncer routes the connections.
+something downstream of pg_ddm routes the connections.
 
 After this command is run, there could be an extended period where
 some server connections go to an old destination and some server
@@ -645,9 +645,9 @@ is called.
 
 #### SUSPEND
 
-All socket buffers are flushed and PgBouncer stops listening for data on them.
+All socket buffers are flushed and pg_ddm stops listening for data on them.
 The command will not return before all buffers are empty.  To be used at the time
-of PgBouncer online reboot.
+of pg_ddm online reboot.
 
 New client connections to a suspended database will wait until
 **RESUME** is called.
@@ -658,14 +658,14 @@ Resume work from previous **KILL**, **PAUSE**, or **SUSPEND** command.
 
 #### SHUTDOWN
 
-The PgBouncer process will exit.
+The pg_ddm process will exit.
 
 #### RELOAD
 
-The PgBouncer process will reload its configuration file and update
+The pg_ddm process will reload its configuration file and update
 changeable settings.
 
-PgBouncer notices when a configuration file reload changes the
+pg_ddm notices when a configuration file reload changes the
 connection parameters of a database definition.  An existing server
 connection to the old destination will be closed when the server
 connection is next released (according to the pooling mode), and new
@@ -689,8 +689,8 @@ Changes a configuration setting (see also **SHOW CONFIG**).  For example:
     SET log_connections = 1;
     SET server_check_query = 'select 2';
 
-(Note that this command is run on the PgBouncer admin console and sets
-PgBouncer settings.  A **SET** command run on another database will be
+(Note that this command is run on the pg_ddm admin console and sets
+pg_ddm settings.  A **SET** command run on another database will be
 passed to the PostgreSQL backend like any other SQL command.)
 
 ### Signals
@@ -724,6 +724,6 @@ From the Libevent documentation:
 
 ## See also
 
-pgbouncer(5) - man page of configuration settings descriptions
+pg_ddm(5) - man page of configuration settings descriptions
 
-<https://www.pgbouncer.org/>
+<https://www.pg_ddm.org/>

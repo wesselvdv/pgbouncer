@@ -1,12 +1,12 @@
-# Example systemd socket unit for PgBouncer
+# Example systemd socket unit for pg_ddm
 #
 # Note that /var/run/postgresql/ would typically be owned or managed
 # by the respective PostgreSQL package.  If you specify it here,
 # systemd will create it first, which might upset the PostgreSQL
-# package (or not).  See pgbouncer.service for further context.
+# package (or not).  See pg_ddm.service for further context.
 #
 [Unit]
-Description=sockets for PgBouncer
+Description=sockets for pg_ddm
 
 [Socket]
 ListenStream=/tmp/.s.PGSQL.6432

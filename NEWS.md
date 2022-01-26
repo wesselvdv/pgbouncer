@@ -1,25 +1,25 @@
-PgBouncer changelog
+pg_ddm changelog
 ===================
 
-PgBouncer 1.16.x
+pg_ddm 1.16.x
 ----------------
 
-**2021-11-11  -  PgBouncer 1.16.1  -  "Test of depth against quiet efficiency"**
+**2021-11-11  -  pg_ddm 1.16.1  -  "Test of depth against quiet efficiency"**
 
 This is a minor release with a security fix.
 
-* Make PgBouncer acting as a server reject extraneous data after an
+* Make pg_ddm acting as a server reject extraneous data after an
   SSL or GSS encryption handshake.
 
   A man-in-the-middle with the ability to inject data into the TCP
   connection could stuff some cleartext data into the start of a
   supposedly encryption-protected database session.  This could be
   abused to send faked SQL commands to the server, although that would
-  only work if PgBouncer did not demand any authentication data.
-  (However, a PgBouncer setup relying on SSL certificate
+  only work if pg_ddm did not demand any authentication data.
+  (However, a pg_ddm setup relying on SSL certificate
   authentication might well not do so.)  (CVE-2021-3935)
 
-**2021-08-09  -  PgBouncer 1.16.0  -  "Fended off a jaguar"**
+**2021-08-09  -  pg_ddm 1.16.0  -  "Fended off a jaguar"**
 
 - Features
   * Support hot reloading of TLS settings.  When the configuration
@@ -48,19 +48,19 @@ This is a minor release with a security fix.
     should no longer happen.  In fact, cancel requests can now exceed
     the pool size by a factor of two, so they really shouldn't get
     stuck
-    anymore. ([#542](https://github.com/pgbouncer/pgbouncer/pull/542),
-    [#543](https://github.com/pgbouncer/pgbouncer/pull/543))
+    anymore. ([#542](https://github.com/pg_ddm/pg_ddm/pull/542),
+    [#543](https://github.com/pg_ddm/pg_ddm/pull/543))
   * Mixed use of md5 and scram via hba has been fixed.
   * The build with c-ares on Windows has been fixed.
   * The dreaded "FIXME: query end, but query_start == 0" messages have
     been fixed.  We now know why they happen, and you shouldn't see
-    them anymore. ([#565](https://github.com/pgbouncer/pgbouncer/pull/565))
+    them anymore. ([#565](https://github.com/pg_ddm/pg_ddm/pull/565))
   * Fix reloading of `default_pool_size`, `min_pool_size`, and
     `res_pool_size`.  Reloading these settings previously didn't work.
 
 - Cleanups
   * Cirrus CI is now
-    [used](https://cirrus-ci.com/github/pgbouncer/pgbouncer) instead
+    [used](https://cirrus-ci.com/github/pg_ddm/pg_ddm) instead
     of Travis CI.
   * As usual, many tests have been added.
   * The "unclean server" log message has been clarified a bit.  It now
@@ -68,30 +68,30 @@ This is a minor release with a security fix.
     disconnect before everything was sent to the server".  The former
     can happen if the client connection is closed when the server has
     a transaction block open, which confused some users.
-  * You can no longer use "pgbouncer" as a database name.  This name
+  * You can no longer use "pg_ddm" as a database name.  This name
     is reserved for the admin console, and using it as a normal
     database name never really worked right.  This is now explicitly
     prohibited.
   * Errors sent to clients before the connection is closed are now
     labeled as FATAL instead of just ERROR.  Some clients were
     confused
-    otherwise. ([#564](https://github.com/pgbouncer/pgbouncer/pull/564))
+    otherwise. ([#564](https://github.com/pg_ddm/pg_ddm/pull/564))
   * Fix compiler warnings with GCC 11.
-    ([#623](https://github.com/pgbouncer/pgbouncer/issues/623))
+    ([#623](https://github.com/pg_ddm/pg_ddm/issues/623))
 
-PgBouncer 1.15.x
+pg_ddm 1.15.x
 ----------------
 
-**2020-11-19  -  PgBouncer 1.15.0  -  "Ich hab noch einen Koffer in Berlin"**
+**2020-11-19  -  pg_ddm 1.15.0  -  "Ich hab noch einen Koffer in Berlin"**
 
 - Features
   * Improve authentication failure reporting.  The authentication
     failure messages sent to the client now only state that
     authentication failed but give no further details.  Details are
-    available in the PgBouncer log.  Also, if the requested user does
+    available in the pg_ddm log.  Also, if the requested user does
     not exist, the authentication is still processed to the end and
     will result in the same generic failure message.  All this
-    prevents clients from probing the PgBouncer instance for user
+    prevents clients from probing the pg_ddm instance for user
     names and other authentication-related insights.  This is similar
     to how PostgreSQL behaves.
   * Don't log anything if client disconnects immediately.  This avoids
@@ -109,33 +109,33 @@ PgBouncer 1.15.x
 
 - Fixes
   * Fix the `so_reuseport` option on FreeBSD.  The original code in
-    PgBouncer 1.12.0 didn't actually work on FreeBSD.
-    ([#504](https://github.com/pgbouncer/pgbouncer/pull/504))
+    pg_ddm 1.12.0 didn't actually work on FreeBSD.
+    ([#504](https://github.com/pg_ddm/pg_ddm/pull/504))
   * Repair compilation on systems with older systemd versions.  This
     was broken in 1.14.0.
-    ([#505](https://github.com/pgbouncer/pgbouncer/issues/505))
+    ([#505](https://github.com/pg_ddm/pg_ddm/issues/505))
   * The makefile target to build Windows binary zip packages has been
     repaired.
   * Long command-line options now also work on Windows.
   * Fix the behavior of the global `auth_user` setting.  The old
     behavior was confusing and fragile as it depended on the order in
     the configuration file.  This is no longer the
-    case. ([#391](https://github.com/pgbouncer/pgbouncer/issues/391),
-    [#393](https://github.com/pgbouncer/pgbouncer/issues/393))
+    case. ([#391](https://github.com/pg_ddm/pg_ddm/issues/391),
+    [#393](https://github.com/pg_ddm/pg_ddm/issues/393))
 
 - Cleanups
   * Improve test stability and portability.
   * Modernize Autoconf-related code.
   * Disable deprecation compiler warnings from OpenSSL 3.0.0.
 
-PgBouncer 1.14.x
+pg_ddm 1.14.x
 ----------------
 
-**2020-06-11  -  PgBouncer 1.14.0  -  "La ritrovata magia"**
+**2020-06-11  -  pg_ddm 1.14.0  -  "La ritrovata magia"**
 
 - Features
   * Add SCRAM authentication pass-through.  This allows using
-    encrypted SCRAM secrets in PgBouncer (either in `userlist.txt` or
+    encrypted SCRAM secrets in pg_ddm (either in `userlist.txt` or
     from `auth_query`) for logging into servers.
   * Add support for systemd socket activation.  This is especially
     useful to let systemd handle the creation of the Unix-domain
@@ -145,12 +145,12 @@ PgBouncer 1.14.x
 
 - Cleanups
   * Add an alternative smaller sample configuration file
-    `pgbouncer-minimal.ini` for testing or deployment.
+    `pg_ddm-minimal.ini` for testing or deployment.
 
-PgBouncer 1.13.x
+pg_ddm 1.13.x
 ----------------
 
-**2020-04-27  -  PgBouncer 1.13.0  -  "My favourite game"**
+**2020-04-27  -  pg_ddm 1.13.0  -  "My favourite game"**
 
 - Features
   * Add configuration setting `tcp_user_timeout`, to set the
@@ -167,7 +167,7 @@ PgBouncer 1.13.x
   * Fix multiline log messages
     ([libusual #24](https://github.com/libusual/libusual/pull/24))
   * Handle null user names returned from `auth_query` properly
-    ([#340](https://github.com/pgbouncer/pgbouncer/pull/340))
+    ([#340](https://github.com/pg_ddm/pg_ddm/pull/340))
 
 - Cleanups
   * The Debian packaging files under `debian` have been removed.  It
@@ -179,16 +179,16 @@ PgBouncer 1.13.x
   * The libevent API use was updated to use version 2 style interfaces
     and to no longer use deprecated interfaces from version 1.
 
-PgBouncer 1.12.x
+pg_ddm 1.12.x
 ----------------
 
-**2019-10-17  -  PgBouncer 1.12.0  -  "It's about learning and getting better"**
+**2019-10-17  -  pg_ddm 1.12.0  -  "It's about learning and getting better"**
 
 This release contains a variety of minor enhancements and fixes.
 
 - Features
   * Add a setting to turn on the `SO_REUSEPORT` socket option.  On
-    some operating systems, this allows running multiple PgBouncer
+    some operating systems, this allows running multiple pg_ddm
     instances on the same host listening on the same port and having
     the kernel distribute the connections automatically.
   * Add a setting to use a `resolv.conf` file separate from the
@@ -202,14 +202,14 @@ This release contains a variety of minor enhancements and fixes.
   * Send statistics columns as `numeric` instead of `bigint`.  This
     avoids some client libraries failing on values that overflow the
     `bigint`
-    range. ([#360](https://github.com/pgbouncer/pgbouncer/pull/360),
-    [#401](https://github.com/pgbouncer/pgbouncer/pull/401))
+    range. ([#360](https://github.com/pg_ddm/pg_ddm/pull/360),
+    [#401](https://github.com/pg_ddm/pg_ddm/pull/401))
   * Fix issue with PAM users losing their
-    password. ([#285](https://github.com/pgbouncer/pgbouncer/issues/285))
+    password. ([#285](https://github.com/pg_ddm/pg_ddm/issues/285))
   * Accept SCRAM channel binding enabled clients.  Previously, a
     client supporting channel binding (that is, PostgreSQL 11+) would
-    get a connection failure when connecting to PgBouncer in certain
-    situations.  (PgBouncer does not support channel binding.  This
+    get a connection failure when connecting to pg_ddm in certain
+    situations.  (pg_ddm does not support channel binding.  This
     change just fixes support for clients that offer it.)
   * Fix compilation with newer versions of musl-libc (used by Alpine
     Linux).
@@ -218,26 +218,26 @@ This release contains a variety of minor enhancements and fixes.
   * Add `make check` target.  This allows running all the tests from a
     single command.
   * Remove references to the PostgreSQL wiki.  All information is now
-    either in the PgBouncer documentation or on the web site.
+    either in the pg_ddm documentation or on the web site.
   * Remove support for Libevent version 1.x.  Libevent 2.x is now
     required.  Libevent is now detected using pkg-config.
   * Fix compiler warnings on macOS and Windows.  The build on these
     platforms should now be free of warnings.
   * Fix some warnings from LLVM scan-build.
 
-PgBouncer 1.11.x
+pg_ddm 1.11.x
 ----------------
 
-**2019-08-27  -  PgBouncer 1.11.0  -  "Instinct for Greatness"**
+**2019-08-27  -  pg_ddm 1.11.0  -  "Instinct for Greatness"**
 
 - Features
   * Add support for SCRAM authentication for clients and servers.  A
     new authentication type `scram-sha-256` is added.
   * Handle `auth_type=password` when the stored password is md5, like
     a PostgreSQL server
-    would. ([#129](https://github.com/pgbouncer/pgbouncer/pull/129))
+    would. ([#129](https://github.com/pg_ddm/pg_ddm/pull/129))
   * Add option `log_stats` to disable printing stats to
-    log. ([#287](https://github.com/pgbouncer/pgbouncer/pull/287))
+    log. ([#287](https://github.com/pg_ddm/pg_ddm/pull/287))
   * Add time zone to log timestamps.
   * Put PID into [brackets] in log prefix.
 - Fixes
@@ -245,7 +245,7 @@ PgBouncer 1.11.x
     `-Werror`.
   * Fix wait time computation with `auth_user`.  This would either
     crash or report garbage values for wait
-    time. ([#393](https://github.com/pgbouncer/pgbouncer/pull/393))
+    time. ([#393](https://github.com/pg_ddm/pg_ddm/pull/393))
   * Handle GSSENCRequest packet, added in PostgreSQL 12.  It doesn't
     do anything right now, but it avoids confusing error messages
     about "bad packet header".
@@ -254,12 +254,12 @@ PgBouncer 1.11.x
   * Fix several compiler warnings on Windows.
   * Expand documentation of the `[users]` section and add to example
     config
-    file. ([#330](https://github.com/pgbouncer/pgbouncer/pull/330))
+    file. ([#330](https://github.com/pg_ddm/pg_ddm/pull/330))
 
-PgBouncer 1.10.x
+pg_ddm 1.10.x
 ----------------
 
-**2019-07-01  -  PgBouncer 1.10.0  -  "Afraid of the World"**
+**2019-07-01  -  pg_ddm 1.10.0  -  "Afraid of the World"**
 
 - Features
   * Add support for enabling and disabling TLS 1.3.  (TLS 1.3 was
@@ -270,15 +270,15 @@ PgBouncer 1.10.x
   * Fix TLS 1.3 support.  This was broken with OpenSSL 1.1.1 and
     1.1.1a (but not before or after).
   * Fix a rare crash in `SHOW FDS`
-    ([#311](https://github.com/pgbouncer/pgbouncer/issues/311)).
+    ([#311](https://github.com/pg_ddm/pg_ddm/issues/311)).
   * Fix an issue that could lead to prolonged downtime if many cancel
     requests arrive
-    ([#329](https://github.com/pgbouncer/pgbouncer/issues/329)).
+    ([#329](https://github.com/pg_ddm/pg_ddm/issues/329)).
   * Avoid "unexpected response from login query" after a postgres
     reload
-    ([#220](https://github.com/pgbouncer/pgbouncer/issues/220)).
+    ([#220](https://github.com/pg_ddm/pg_ddm/issues/220)).
   * Fix `idle_transaction_timeout` calculation
-    ([#125](https://github.com/pgbouncer/pgbouncer/issues/125)).  The
+    ([#125](https://github.com/pg_ddm/pg_ddm/issues/125)).  The
     bug would lead to premature timeouts in specific situations.
 - Cleanups
   * Make various log and error messages more precise.
@@ -290,10 +290,10 @@ PgBouncer 1.10.x
   * Python scripts in the source tree are all compatible with Python 3
     now.
 
-PgBouncer 1.9.x
+pg_ddm 1.9.x
 ---------------
 
-**2018-08-13  -  PgBouncer 1.9.0  -  "Chaos Survival"**
+**2018-08-13  -  pg_ddm 1.9.0  -  "Chaos Survival"**
 
 - Features
   * RECONNECT command
@@ -319,16 +319,16 @@ PgBouncer 1.9.x
   * Fix psql invocation in tests
   * Various other test setup improvements
 
-PgBouncer 1.8.x
+pg_ddm 1.8.x
 ---------------
 
-**2017-12-20  -  PgBouncer 1.8.1  -  "Ground-and-pound Mentality"**
+**2017-12-20  -  pg_ddm 1.8.1  -  "Ground-and-pound Mentality"**
 
 - Fixes
   * Include file `include/pam.h` into distribution tarball.  This
     prevented the 1.8 tarball from building at all.
 
-**2017-12-19  -  PgBouncer 1.8  -  "Confident at the Helm"**
+**2017-12-19  -  pg_ddm 1.8  -  "Confident at the Helm"**
 
 - Features
   * Support PAM authentication.  (Enable with `--with-pam`.)
@@ -344,19 +344,19 @@ PgBouncer 1.8.x
   * Updated libusual supports OpenSSL 1.1.
   * Do not attempt to use TLS on Unix sockets.
   * When parsing `pg_hba.conf`, keep parsing after erroneous lines instead of rejecting the whole file.
-    ([#118](https://github.com/pgbouncer/pgbouncer/issues/118))
+    ([#118](https://github.com/pg_ddm/pg_ddm/issues/118))
   * Several other hba parsing fixes.
   * Fix race condition when canceling query.
-    ([#141](https://github.com/pgbouncer/pgbouncer/issues/141))
+    ([#141](https://github.com/pg_ddm/pg_ddm/issues/141))
 - Cleanups
   * `auth_user` setting is now also allowed globally, not only per database.
-    ([#142](https://github.com/pgbouncer/pgbouncer/issues/142))
+    ([#142](https://github.com/pg_ddm/pg_ddm/issues/142))
   * Set console client and server encoding to `UTF8`.
 
-PgBouncer 1.7.x
+pg_ddm 1.7.x
 ---------------
 
-**2016-02-26  -  PgBouncer 1.7.2  -  "Finally Airborne"**
+**2016-02-26  -  pg_ddm 1.7.2  -  "Finally Airborne"**
 
 - Fixes
   * Fix crash on stale pidfile removal.  Problem introduced in 1.7.1.
@@ -364,17 +364,17 @@ PgBouncer 1.7.x
     for production loads.  Problem introduced in 1.7.1.
   * After takeover, wait until pidfile is gone before booting.
     Slow shutdown due to memory cleanup exposed existing race.
-    ([#113](https://github.com/pgbouncer/pgbouncer/issues/113))
+    ([#113](https://github.com/pg_ddm/pg_ddm/issues/113))
 - Cleanups
   * Make build reproducible by dropping DBGVER handling.
-    ([#112](https://github.com/pgbouncer/pgbouncer/issues/112))
+    ([#112](https://github.com/pg_ddm/pg_ddm/issues/112))
   * Antimake: Sort file list from $(wildcard), newer gmake does not
     sort it anymore.
-    ([#111](https://github.com/pgbouncer/pgbouncer/issues/111))
+    ([#111](https://github.com/pg_ddm/pg_ddm/issues/111))
   * Show libssl version in log.
   * deb: Turn on full hardening.
 
-**2016-02-18  -  PgBouncer 1.7.1  -  "Forward To Five Friends Or Else"**
+**2016-02-18  -  pg_ddm 1.7.1  -  "Forward To Five Friends Or Else"**
 
 WARNING: Since version 1.7, `server_reset_query` is not executed when
 database is in transaction-pooling mode.  Seems this was not highlighted
@@ -391,28 +391,28 @@ instead expected 20-30k.  Something to keep an eye on when using TLS.
     PostgreSQL uses.
   * TLS: `client_tls_sslmode=verify-ca/-full` now reject
     connections without client certificate.
-    ([#104](https://github.com/pgbouncer/pgbouncer/issues/104))
+    ([#104](https://github.com/pg_ddm/pg_ddm/issues/104))
   * TLS: `client_tls_sslmode=allow/require` do validate client
     certificate if sent.  Previously they left cert validation
     unconfigured so connections with client cert failed.
-    ([#105](https://github.com/pgbouncer/pgbouncer/issues/105))
+    ([#105](https://github.com/pg_ddm/pg_ddm/issues/105))
   * Fix memleak when freeing database.
   * Fix potential memleak in tls_handshake().
   * Fix EOF handling in tls_handshake().
   * Fix too small memset in asn1_time_parse compat.
   * Fix non-TLS (`--without-openssl`) build.
-    ([#101](https://github.com/pgbouncer/pgbouncer/issues/101))
+    ([#101](https://github.com/pg_ddm/pg_ddm/issues/101))
   * Fix various issues with Windows build.
-    ([#100](https://github.com/pgbouncer/pgbouncer/issues/100))
+    ([#100](https://github.com/pg_ddm/pg_ddm/issues/100))
 - Cleanups
   * TLS: Use SSL_MODE_RELEASE_BUFFERS to decrease memory usage
     of inactive connections.
   * Clean allocated memory on exit.  Helps to run memory-leak checkers.
   * Improve `server_reset_query` documentation.
-    ([#110](https://github.com/pgbouncer/pgbouncer/issues/110))
+    ([#110](https://github.com/pg_ddm/pg_ddm/issues/110))
   * Add TLS options to sample config.
 
-**2015-12-18  -  PgBouncer 1.7  -  "Colors Vary After Resurrection"**
+**2015-12-18  -  pg_ddm 1.7  -  "Colors Vary After Resurrection"**
 
 - Features
   * Support TLS connections.  OpenSSL/LibreSSL is used
@@ -437,7 +437,7 @@ instead expected 20-30k.  Something to keep an eye on when using TLS.
     from connections and used lazily from pool.
   * Support pipelining count expected ReadyForQuery packets.
     This avoids releasing server too early.  Fixes
-    [#52](https://github.com/pgbouncer/pgbouncer/issues/52).
+    [#52](https://github.com/pg_ddm/pg_ddm/issues/52).
   * Improved sbuf_loopcnt logic - socket is guarateed to be
     reprocessed even if there are no event from socket.
     Required for TLS as it has it's own buffering.
@@ -448,15 +448,15 @@ instead expected 20-30k.  Something to keep an eye on when using TLS.
   * Fix plain "--with-cares" configure option - without argument
     it was broken.
 
-PgBouncer 1.6.x
+pg_ddm 1.6.x
 ---------------
 
-**2015-09-03  -  PgBouncer 1.6.1  -  "Studio Audience Approves"**
+**2015-09-03  -  pg_ddm 1.6.1  -  "Studio Audience Approves"**
 
 - Features
   * New setting: `server_reset_query_always`.  When set,
     disables `server_reset_query` use on non-session pools.
-    PgBouncer introduces per-pool pool_mode, but session-pooling
+    pg_ddm introduces per-pool pool_mode, but session-pooling
     and transaction-pooling should not use same reset query.
     In fact, transaction-pooling should not use any reset query.
 
@@ -477,7 +477,7 @@ PgBouncer 1.6.x
 
   * Various portability fixes (OpenBSD, Solaris, OSX).
 
-**2015-08-01  -  PgBouncer 1.6  -  "Zombies of the future"**
+**2015-08-01  -  pg_ddm 1.6  -  "Zombies of the future"**
 
 - Features
 
@@ -512,7 +512,7 @@ PgBouncer 1.6.x
 
     SNAFU: c-ares versions <= 1.10 have bug which breaks CNAME-s support
     when IPv6 has been enabled.  (Fixed upstream.)  As a workaround,
-    c-ares <= 1.10 is used IPv4-only.  So PgBouncer will drop other backends
+    c-ares <= 1.10 is used IPv4-only.  So pg_ddm will drop other backends
     only when c-ares >1.10 (still unreleased) has been out some time...
 
   * Show remote_pid in SHOW CLIENTS/SERVERS.  Available for clients that
@@ -571,16 +571,16 @@ PgBouncer 1.6.x
   * Disable server_idle_timeout when server count gets below min_pool (#60)
     (Marko Kreen)
 
-PgBouncer 1.5.x
+pg_ddm 1.5.x
 ---------------
 
-**2015-04-09  -  PgBouncer 1.5.5  -  "Play Dead To Win"**
+**2015-04-09  -  pg_ddm 1.5.5  -  "Play Dead To Win"**
 
 - Fixes
   * Fix remote crash - invalid packet order causes lookup of NULL
     pointer.  Not exploitable, just DoS.
 
-**2012-11-28  -  PgBouncer 1.5.4  -  "No Leaks, Potty-Training Successful"**
+**2012-11-28  -  pg_ddm 1.5.4  -  "No Leaks, Potty-Training Successful"**
 
 - Fixes
   * DNS: Fix memory leak in getaddrinfo_a() backend.
@@ -591,7 +591,7 @@ PgBouncer 1.5.x
   * Fix compiler dependency support check in configure.
   * Few documentation fixes.
 
-**2012-09-12  -  PgBouncer 1.5.3  -  "Quantum Toaster"**
+**2012-09-12  -  pg_ddm 1.5.3  -  "Quantum Toaster"**
 
 - Critical fix
 
@@ -622,7 +622,7 @@ PgBouncer 1.5.x
   * config.txt: show that all timeouts can be set in floats.
     This is well-hidden feature introduced in 1.4.
 
-**2012-05-29  -  PgBouncer 1.5.2  -  "Don't Chew, Just Swallow"**
+**2012-05-29  -  pg_ddm 1.5.2  -  "Don't Chew, Just Swallow"**
 
 - Fixes
   * Due to mistake, reserve_pool_timeout was taken in microseconds,
@@ -630,7 +630,7 @@ PgBouncer 1.5.x
     when pool got full.  Now use it as seconds, as was intended.
     (Noticed by Keyur Govande)
 
-**2012-04-17  -  PgBouncer 1.5.1  -  "Abort, Retry, Ignore?"**
+**2012-04-17  -  pg_ddm 1.5.1  -  "Abort, Retry, Ignore?"**
 
 - Features
   * Parameters to tune permissions on unix socket:
@@ -640,7 +640,7 @@ PgBouncer 1.5.x
     needed to get "application_name" properly working, as it's
     the only parameter that does not have server-side default.
   * If connect string changes, require refresh of server parameters.
-    Previously PgBouncer continued with old parameters,
+    Previously pg_ddm continued with old parameters,
     which breaks in case of Postgres upgrade.
   * If autodb connect string changes, drop old connections.
   * cf_setint: Use strtol() instead atoi() to parse integer config
@@ -655,7 +655,7 @@ PgBouncer 1.5.x
     earlier versions anymore.
   * Stop trying to retry on EINTR from close().
 
-**2012-01-05  -  PgBouncer 1.5  -  "Bouncing Satisified Clients Since 2007"**
+**2012-01-05  -  pg_ddm 1.5  -  "Bouncing Satisified Clients Since 2007"**
 
 If you use more than 8 IPs behind one DNS name, you now need to
 use EDNS0 protocol to query.  Only getaddrinfo_a()/getaddrinfo()
@@ -709,10 +709,10 @@ GNU Make 3.81+ is required for building.
   * Fix run-as-service crash on win32 due to bad basename() from
     mingw/msvc runtime.  Now compat basename() is always used.
 
-PgBouncer 1.4.x
+pg_ddm 1.4.x
 ---------------
 
-**2011-06-16  -  PgBouncer 1.4.2  -  "Strike-First Algorithm"**
+**2011-06-16  -  pg_ddm 1.4.2  -  "Strike-First Algorithm"**
 
 Affected OS-es: \*BSD, Solaris, Win32.
 
@@ -728,7 +728,7 @@ Affected OS-es: \*BSD, Solaris, Win32.
   * <usual/time.h>: Better function autodetection on win32
   * <usual/base_win32.h>: Remove duplicate sigval/sigevent declaration
 
-**2011-04-01  -  PgBouncer 1.4.1  -  "It Was All An Act"**
+**2011-04-01  -  pg_ddm 1.4.1  -  "It Was All An Act"**
 
 - Features
 
@@ -736,7 +736,7 @@ Affected OS-es: \*BSD, Solaris, Win32.
     (Hannu Krosing)
   * Multiple listen addresses in 'listen_addr'.  For each getaddrinfo()
     is called, so names can also be used.
-  * console: Send PgBouncer version as 'server_version' to client.
+  * console: Send pg_ddm version as 'server_version' to client.
 
 - Important Fixes
 
@@ -797,7 +797,7 @@ Affected OS-es: \*BSD, Solaris, Win32.
   * Restore lost memset in slab allocator
   * Various minor portability fixes in libusual.
 
-**2011-01-11  -  PgBouncer 1.4  -  "Gore Code"**
+**2011-01-11  -  pg_ddm 1.4  -  "Gore Code"**
 
 - Features
 
@@ -837,10 +837,10 @@ Affected OS-es: \*BSD, Solaris, Win32.
   * Use libusual library for low-level utility functions.
   * Remove fixed-length limit from server params.
 
-PgBouncer 1.3.x
+pg_ddm 1.3.x
 ---------------
 
-**2010-09-09  -  PgBouncer 1.3.4  -  "Bouncer is always right"**
+**2010-09-09  -  pg_ddm 1.3.4  -  "Bouncer is always right"**
 
 - Fixes
   * Apply fast-fail logic at connect time.  So if server is failing,
@@ -855,7 +855,7 @@ PgBouncer 1.3.x
   * Support OS'es (OpenBSD) where tv_sec is not time_t.
   * Avoid too noisy warnings on gcc 4.5.
 
-**2010-05-10  -  PgBouncer 1.3.3  -  "NSFW"**
+**2010-05-10  -  pg_ddm 1.3.3  -  "NSFW"**
 
 - Improvements
   * Make listen(2) argument configurable: listen_backlog.  This is
@@ -866,13 +866,13 @@ PgBouncer 1.3.x
   * Move fast-fail relaunch logic around.  Old one was annoying in case of
     permanently broken databases or users, by trying to retry even if
     there is no clients who want to login.
-  * Make logging functions keep old errno, otherwise pgbouncer may act funny
+  * Make logging functions keep old errno, otherwise pg_ddm may act funny
     on higher loglevels and logging problems.
   * Increase the size of various startup-related buffers to handle
     EDB more noisy startup.
   * Detect V2 protocol startup request and give clear reason for disconnect.
 
-**2010-03-15  -  PgBouncer 1.3.2  -  "Boomerang Bullet"**
+**2010-03-15  -  pg_ddm 1.3.2  -  "Boomerang Bullet"**
 
 - Fixes
 
@@ -912,7 +912,7 @@ PgBouncer 1.3.x
 
   * Change log message for query_timeout to "query timeout".
 
-**2009-07-06  -  PgBouncer 1.3.1  -  "Now fully conforming to NSA monitoring requirements"**
+**2009-07-06  -  pg_ddm 1.3.1  -  "Now fully conforming to NSA monitoring requirements"**
 
 - Fixes
   * Fix problem with sbuf_loopcnt which could make connections hang.
@@ -922,7 +922,7 @@ PgBouncer 1.3.x
   * Make database reconfigure immediate.  Currently old connections
     could be reused after SIGHUP.
   * Fix SHOW DATABASES which was broken due to column addition.
-  * Console access was disabled when "auth_type=any" as pgbouncer dropped username.
+  * Console access was disabled when "auth_type=any" as pg_ddm dropped username.
     Fix: if "auth_type=any", allow any user to console as admin.
   * Fix bad CUSTOM_ALIGN macro.  Luckily it's unused if OS already
     defines ALIGN macro thus seems the bug has not happened in wild.
@@ -935,14 +935,14 @@ PgBouncer 1.3.x
   * doc/usage.txt: the time units in console results are in
     microseconds, not milliseconds.
 
-**2009-02-18  -  PgBouncer 1.3 -  "New Ki-Smash Finishing Move"**
+**2009-02-18  -  pg_ddm 1.3 -  "New Ki-Smash Finishing Move"**
 
 - Features
 
-  * IANA has assigned port 6432 to be official port for PgBouncer.
+  * IANA has assigned port 6432 to be official port for pg_ddm.
     Thus the default port number has changed to 6432.  Existing
     individual users do not need to change, but if you distribute
-    packages of PgBouncer, please change the package default
+    packages of pg_ddm, please change the package default
     to official port.
 
   * Dynamic database creation (David Galoyan)
@@ -953,17 +953,17 @@ PgBouncer 1.3.x
 
   * Windows support (Hiroshi Saito)
 
-    PgBouncer runs on Windows 2000+ now.  Command line usage stays same,
+    pg_ddm runs on Windows 2000+ now.  Command line usage stays same,
     except it cannot run as daemon and cannot do online reboot.
     To run as service, define parameter service_name in config. Then:
 
-        > pgbouncer.exe config.ini -regservice
+        > pg_ddm.exe config.ini -regservice
         > net start SERVICE_NAME
 
     To stop and unregister:
 
         > net stop SERVICE_NAME
-        > pgbouncer.exe config.ini -unregservice
+        > pg_ddm.exe config.ini -unregservice
 
     To use Windows Event Log, event DLL needs to be registered first:
 
@@ -985,7 +985,7 @@ PgBouncer 1.3.x
   * New tunable 'sbuf_loopcnt' to limit time spent on one socket.
 
     In some situations - eg SMP server, local Postgres and fast network -
-    pgbouncer can run recv()->send() loop many times without blocking
+    pg_ddm can run recv()->send() loop many times without blocking
     on either side.  But that means other connections will stall for
     a long time.  To make processing more fair, limit the times
     of doing recv()->send() one socket.  If count reaches limit,
@@ -995,7 +995,7 @@ PgBouncer 1.3.x
     Thanks to Alexander Schöcke for report and testing.
 
   * crypt() authentication is now optional, as it was removed from Postgres.
-    If OS does not provide it, pgbouncer works fine without it.
+    If OS does not provide it, pg_ddm works fine without it.
 
   * Add milliseconds to log timestamps.
 
@@ -1006,7 +1006,7 @@ PgBouncer 1.3.x
 - Fixes
 
   * In case event_del() reports failure, just proceed with cleanup.
-    Previously pgbouncer retried it, in case the failure was due ENOMEM.
+    Previously pg_ddm retried it, in case the failure was due ENOMEM.
     But this has caused log floods with inifinite repeats, so it seems
     libevent does not like it.
 
@@ -1020,10 +1020,10 @@ PgBouncer 1.3.x
 
   * Include COPYRIGHT file in .tgz...
 
-PgBouncer 1.2.x
+pg_ddm 1.2.x
 ---------------
 
-**2008-08-08  -  PgBouncer 1.2.3  -  "Carefully Selected Bytes"**
+**2008-08-08  -  pg_ddm 1.2.3  -  "Carefully Selected Bytes"**
 
 - Fixes
   * Disable SO_ACCEPTFILTER code for BSDs which did not work.
@@ -1035,14 +1035,14 @@ PgBouncer 1.2.x
 
 Thanks to Devrim GÜNDÜZ and Bjoern Metzdorf for problem reports and testing.
 
-**2008-08-06  -  PgBouncer 1.2.2  -  "Barf-bag Included"**
+**2008-08-06  -  pg_ddm 1.2.2  -  "Barf-bag Included"**
 
 - Fixes
   * Remove 'drop_on_error', it was a bad idea.  It was added as workaround
     for broken plan cache behaviour in Postgres, but can cause damage
     in common case when some queries always return error.
 
-**2008-08-04  -  PgBouncer 1.2.1  -  "Waterproof"**
+**2008-08-04  -  pg_ddm 1.2.1  -  "Waterproof"**
 
 - Features
   * New parameter 'drop_on_error' - if server throws error the connection
@@ -1058,15 +1058,15 @@ Thanks to Devrim GÜNDÜZ and Bjoern Metzdorf for problem reports and testing.
     otherwise it will trigger on next PAUSE.
   * Proper log message if console operation is canceled.
 
-**2008-07-29  -  PgBouncer 1.2  -  "Ordinary Magic Flute"**
+**2008-07-29  -  pg_ddm 1.2  -  "Ordinary Magic Flute"**
 
-PgBouncer 1.2 now requires libevent version 1.3b or newer.
+pg_ddm 1.2 now requires libevent version 1.3b or newer.
 Older libevent versions crash with new restart code.
 
 - Features
 
   * Command line option (-u) and config parameter (user=) to support user
-    switching at startup.  Also now pgbouncer refuses to run as root.
+    switching at startup.  Also now pg_ddm refuses to run as root.
 
     (Jacob Coby)
 
@@ -1117,7 +1117,7 @@ Older libevent versions crash with new restart code.
     (client_encoding/default_transaction_isolation/datestyle/timezone)
 
   * Make server_lifetime=0 disconnect server connection immediately
-    after first use.  Previously "0" made PgBouncer ignore server age.
+    after first use.  Previously "0" made pg_ddm ignore server age.
     As this behavior was undocumented, there should not be any users
     depending on it.
 
@@ -1127,7 +1127,7 @@ Older libevent versions crash with new restart code.
       huge decrease in memory usage.  This also makes realistic to use
       big pktbuf with lot of connections.
 
-    - Lot's of error handling improvements, PgBouncer should now
+    - Lot's of error handling improvements, pg_ddm should now
       survive OOM situations gracefully.
 
     - Use slab allocator for memory management.
@@ -1144,14 +1144,14 @@ Older libevent versions crash with new restart code.
   * Make configure.ac compatible with autoconf 2.59.
   * Solaris compatibility fixes (Magne Mæhre)
 
-PgBouncer 1.1.x
+pg_ddm 1.1.x
 ---------------
 
-**2007-12-10  -  PgBouncer 1.1.2  -  "The Hammer"**
+**2007-12-10  -  pg_ddm 1.1.2  -  "The Hammer"**
 
 - Features
   * Disconnects because of server_lifetime are now separated by
-    (server_lifetime / pool_size) seconds.  This avoids pgbouncer
+    (server_lifetime / pool_size) seconds.  This avoids pg_ddm
     causing reconnect floods.
 - Fixes
   * Online upgrade 1.0 -> 1.1 problems:
@@ -1165,7 +1165,7 @@ PgBouncer 1.1.x
 - Cleanup
   * reorder struct SBuf fields to get better alignment for buffer.
 
-**2007-10-26  -  PgBouncer 1.1.1  -  "Breakdancing Bee"**
+**2007-10-26  -  pg_ddm 1.1.1  -  "Breakdancing Bee"**
 
 - Fixes
   * Server parameter cache could stay uninitialized, which caused
@@ -1175,7 +1175,7 @@ PgBouncer 1.1.x
   * Some doc fixes.
   * Include doc/fixman.py in .tgz.
 
-**2007-10-09  -  PgBouncer 1.1  -  "Mad-Hat Toolbox"**
+**2007-10-09  -  pg_ddm 1.1  -  "Mad-Hat Toolbox"**
 
 - Features
 
@@ -1208,13 +1208,13 @@ PgBouncer 1.1.x
 - Fixes
 
   * Detect invalid pkt headers better.
-  * auth_file modification check was broken, which made pgbouncer
+  * auth_file modification check was broken, which made pg_ddm
     reload it too often.
 
-PgBouncer 1.0.x
+pg_ddm 1.0.x
 ---------------
 
-**2007-06-18  -  PgBouncer 1.0.8  -  "Undead Shovel Jutsu"**
+**2007-06-18  -  pg_ddm 1.0.8  -  "Undead Shovel Jutsu"**
 
 - Fixes
   * Fix crash in cancel packet handling. (^C from psql)
@@ -1223,12 +1223,12 @@ PgBouncer 1.0.x
   * Cleanup of console command parsing.
   * Disable expensive in-list assert check.
 
-**2007-04-19  -  PgBouncer 1.0.7  -  "With Vitamin A-Z"**
+**2007-04-19  -  pg_ddm 1.0.7  -  "With Vitamin A-Z"**
 
 - Fixes
   * Several error/notice packets with send() blocking between
     triggered assert.  Fix it by removing flushing logic altogether.
-    As pgbouncer does not actively buffer anything, its not needed.
+    As pg_ddm does not actively buffer anything, its not needed.
     It was a remnant from the time when buffering was pushed to
     kernel with MSG_MORE.
   * Additionally avoid calling recv() logic when sending unblocks.
@@ -1236,7 +1236,7 @@ PgBouncer 1.0.x
     mishandled partial finds.  Fix it.
   * Standardise UNIX socket peer UID finding to getpeereid().
 
-**2007-04-12  -  PgBouncer 1.0.6  -  "Daily Dose"**
+**2007-04-12  -  pg_ddm 1.0.6  -  "Daily Dose"**
 
 - Fixes
   * The "Disable maintenance during the takeover" fix could
@@ -1244,7 +1244,7 @@ PgBouncer 1.0.x
   * Compilation fix for FreeBSD, <sys/ucred.h> requires <sys/param.h> there.
     Thanks go to Robert Gogolok for report.
 
-**2007-04-11  -  PgBouncer 1.0.5  -  "Enough for today"**
+**2007-04-11  -  pg_ddm 1.0.5  -  "Enough for today"**
 
 - Fixes
   * Fix online-restart bugs:
@@ -1252,14 +1252,14 @@ PgBouncer 1.0.x
     - Remove obsolete code from use_client_socket()
     - Disable maintenance during the takeover.
 
-**2007-04-11  -  PgBouncer 1.0.4  -  "Last 'last' bug"**
+**2007-04-11  -  pg_ddm 1.0.4  -  "Last 'last' bug"**
 
 - Fixes
   * Notice from idle server tagged server dirty.
     release_server() did not expect it.  Fix it
     by dropping them.
 
-**2007-04-11  -  PgBouncer 1.0.3  -  "Fearless Fork"**
+**2007-04-11  -  pg_ddm 1.0.3  -  "Fearless Fork"**
 
 - Fixes
   * Some error handling was missing in login path, so dying
@@ -1273,7 +1273,7 @@ PgBouncer 1.0.x
   * Config var: client_login_timeout to kill dead connections
     in login phase that could stall SUSPEND and thus online restart.
 
-**2007-03-28  -  PgBouncer 1.0.2  -  "Supersonic Spoon"**
+**2007-03-28  -  pg_ddm 1.0.2  -  "Supersonic Spoon"**
 
 - Fixes
   * libevent may report a deleted event inside same loop.
@@ -1281,7 +1281,7 @@ PgBouncer 1.0.x
   * release_server() from disconnect_client() didnt look
     it the packet was actually sent.
 
-**2007-03-15  -  PgBouncer 1.0.1  -  "Alien technology"**
+**2007-03-15  -  pg_ddm 1.0.1  -  "Alien technology"**
 
 - Fixes
   * Mixed usage of cached and non-cached time, plus unsiged usec_t typedef
@@ -1297,6 +1297,6 @@ PgBouncer 1.0.x
   * In console, allow SELECT in place of SHOW.
   * Various code cleanups.
 
-**2007-03-13  -  PgBouncer 1.0  -  "Tuunitud bemm"**
+**2007-03-13  -  pg_ddm 1.0  -  "Tuunitud bemm"**
 
 - First public release.

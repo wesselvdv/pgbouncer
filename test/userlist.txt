@@ -1,8 +1,8 @@
 "marko" "kama"
 "postgres" "asdasd"
 ;Commented out line should be ignored.
-"pgbouncer" "fake"
-"pswcheck" "pgbouncer-check"
+"pg_ddm" "fake"
+"pswcheck" "pg_ddm-check"
 "maxedout" ""
 
 ;the following pairs of passwords are "foo" and "bar"

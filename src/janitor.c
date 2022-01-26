@@ -1,5 +1,5 @@
 /*
- * PgBouncer - Lightweight connection pooler for PostgreSQL.
+ * pg_ddm - Lightweight connection pooler for PostgreSQL.
  *
  * Copyright (c) 2007-2009  Marko Kreen, Skype Technologies OÜ
  *
@@ -622,7 +622,7 @@ static void do_full_maint(evutil_socket_t sock, short flags, void *arg)
 	seq++;
 
 	/*
-	 * Avoid doing anything that may surprise other pgbouncer.
+	 * Avoid doing anything that may surprise other pg_ddm.
 	 */
 	if (cf_pause_mode == P_SUSPEND)
 		return;
@@ -728,7 +728,7 @@ void kill_database(PgDatabase *db)
 	slab_free(db_cache, db);
 }
 
-/* as [pgbouncer] section can be loaded after databases,
+/* as [pg_ddm] section can be loaded after databases,
    there's need for review */
 void config_postprocess(void)
 {

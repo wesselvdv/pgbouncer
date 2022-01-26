@@ -1,5 +1,5 @@
 /*
- * PgBouncer - Lightweight connection pooler for PostgreSQL.
+ * pg_ddm - Lightweight connection pooler for PostgreSQL.
  *
  * Copyright (c) 2007-2009  Marko Kreen, Skype Technologies OÜ
  *
@@ -54,7 +54,7 @@ struct pam_auth_request {
 
 	/* Same as in client->remote_addr.
 	 * We want to minimize synchronization between the authentication thread and
-	 * the rest of pgbouncer, so the username and remote_addr are explicitly stored here.
+	 * the rest of pg_ddm, so the username and remote_addr are explicitly stored here.
 	 */
 	PgAddr remote_addr;
 
@@ -365,7 +365,7 @@ static bool pam_check_passwd(struct pam_auth_request *request)
 		.appdata_ptr = request
 	};
 
-	rc = pam_start(PGBOUNCER_PAM_SERVICE, request->username, &pam_conv, &hpam);
+	rc = pam_start(pg_ddm_PAM_SERVICE, request->username, &pam_conv, &hpam);
 	if (rc != PAM_SUCCESS) {
 		log_warning("pam_start() failed: %s", pam_strerror(NULL, rc));
 		return false;

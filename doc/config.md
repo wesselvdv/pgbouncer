@@ -1,4 +1,4 @@
-# pgbouncer.ini
+# pg_ddm.ini
 
 
 ## Description
@@ -78,7 +78,7 @@ Default: not set
 ### user
 
 If set, specifies the Unix user to change to after startup. Works only if
-PgBouncer is started as root or if it's already running as the given user.
+pg_ddm is started as root or if it's already running as the given user.
 Not supported on Windows.
 
 Default: not set
@@ -155,7 +155,7 @@ Default: 5.0
 ### max_db_connections
 
 Do not allow more than this many server connections per database
-(regardless of user).  This considers the PgBouncer database that the
+(regardless of user).  This considers the pg_ddm database that the
 client has connected to, not the PostgreSQL database of the outgoing
 connection.
 
@@ -173,7 +173,7 @@ Default: 0 (unlimited)
 ### max_user_connections
 
 Do not allow more than this many server connections per user
-(regardless of database).  This considers the PgBouncer user that is
+(regardless of database).  This considers the pg_ddm user that is
 associated with a pool, which is either the user specified for the
 server connection or in absence of that the user the client has
 connected as.
@@ -191,20 +191,20 @@ Default: 0 (unlimited)
 
 ### server_round_robin
 
-By default, PgBouncer reuses server connections in LIFO (last-in, first-out) manner,
+By default, pg_ddm reuses server connections in LIFO (last-in, first-out) manner,
 so that few connections get the most load.  This gives best performance if you have
 a single server serving a database.  But if there is TCP round-robin behind a database
-IP address, then it is better if PgBouncer also uses connections in that manner, thus
+IP address, then it is better if pg_ddm also uses connections in that manner, thus
 achieving uniform load.
 
 Default: 0
 
 ### ignore_startup_parameters
 
-By default, PgBouncer allows only parameters it can keep track of in startup
+By default, pg_ddm allows only parameters it can keep track of in startup
 packets: `client_encoding`, `datestyle`, `timezone` and `standard_conforming_strings`.
 All others parameters will raise an error.  To allow others parameters, they can be
-specified here, so that PgBouncer knows that they are handled by the admin and it can ignore them.
+specified here, so that pg_ddm knows that they are handled by the admin and it can ignore them.
 
 Default: empty
 
@@ -222,13 +222,13 @@ Default: 0
 Add the client host address and port to the application name setting set on connection start.
 This helps in identifying the source of bad queries etc.  This logic applies
 only at the start of a connection.  If `application_name` is later changed with `SET`,
-PgBouncer does not change it again.
+pg_ddm does not change it again.
 
 Default: 0
 
 ### conffile
 
-Show location of current config file.  Changing it will make PgBouncer use another
+Show location of current config file.  Changing it will make pg_ddm use another
 config file for next `RELOAD` / `SIGHUP`.
 
 Default: file from command line
@@ -237,7 +237,7 @@ Default: file from command line
 
 Used on win32 service registration.
 
-Default: `pgbouncer`
+Default: `pg_ddm`
 
 ### job_name
 
@@ -254,7 +254,7 @@ Default: 60
 
 ## Authentication settings
 
-PgBouncer handles its own client authentication and has its own
+pg_ddm handles its own client authentication and has its own
 database of users.  These settings control this.
 
 ### auth_type
@@ -295,7 +295,7 @@ hba
 pam
 :   PAM is used to authenticate users, `auth_file` is ignored. This method is not
     compatible with databases using the `auth_user` option. The service name reported to
-    PAM is "pgbouncer". `pam` is not supported in the HBA configuration file.
+    PAM is "pg_ddm". `pam` is not supported in the HBA configuration file.
 
 ### auth_hba_file
 
@@ -352,7 +352,7 @@ Default: 0
 
 Under what name to send logs to syslog.
 
-Default: `pgbouncer` (program name)
+Default: `pg_ddm` (program name)
 
 ### syslog_facility
 
@@ -443,7 +443,7 @@ that are in sessions-pooling mode.  Connections in transaction-pooling mode
 should not have any need for a reset query.
 
 This setting is for working around broken setups that run applications that use session features
-over a transaction-pooled PgBouncer.  It changes non-deterministic breakage
+over a transaction-pooled pg_ddm.  It changes non-deterministic breakage
 to deterministic breakage: Clients always lose their state after each
 transaction.
 
@@ -535,7 +535,7 @@ Default: 3600.0
 ### dns_max_ttl
 
 How long DNS lookups can be cached.  If a DNS lookup returns
-several answers, PgBouncer will robin-between them.
+several answers, pg_ddm will robin-between them.
 The actual DNS TTL is ignored.  [seconds]
 
 Default: 15.0
@@ -550,7 +550,7 @@ Default: 15.0
 
 Period to check if a zone serial has changed.
 
-PgBouncer can collect DNS zones from host names (everything after first dot)
+pg_ddm can collect DNS zones from host names (everything after first dot)
 and then periodically check if the zone serial changes.
 If it notices changes, all host names under that zone
 are looked up again.  If any host IP changes, its connections
@@ -569,7 +569,7 @@ options, independent of the global operating system configuration.
 Requires evdns (>= 2.0.3) or c-ares (>= 1.15.0) backend.
 
 The parsing of the file is done by the DNS backend library, not
-PgBouncer, so see the library's documentation for details on allowed
+pg_ddm, so see the library's documentation for details on allowed
 syntax and directives.
 
 Default: empty (use operating system defaults)
@@ -582,7 +582,7 @@ Default: empty (use operating system defaults)
 TLS mode to use for connections from clients.  TLS connections
 are disabled by default.  When enabled, `client_tls_key_file`
 and `client_tls_cert_file` must be also configured to set up
-the key and certificate PgBouncer uses to accept client connections.
+the key and certificate pg_ddm uses to accept client connections.
 
 disable
 :   Plain TCP.  If client requests TLS, it's ignored.  Default.
@@ -606,7 +606,7 @@ verify-full
 
 ### client_tls_key_file
 
-Private key for PgBouncer to accept client connections.
+Private key for pg_ddm to accept client connections.
 
 Default: not set
 
@@ -695,7 +695,7 @@ Default: not set
 
 ### server_tls_key_file
 
-Private key for PgBouncer to authenticate against PostgreSQL server.
+Private key for pg_ddm to authenticate against PostgreSQL server.
 
 Default: not set
 
@@ -784,7 +784,7 @@ Default: 4096
 
 ### max_packet_size
 
-Maximum size for PostgreSQL packets that PgBouncer allows through.  One packet
+Maximum size for PostgreSQL packets that pg_ddm allows through.  One packet
 is either one query or one result set row.  The full result set can be larger.
 
 Default: 2147483647
@@ -800,7 +800,7 @@ Default: 128
 
 How many times to process data on one connection, before proceeding.
 Without this limit, one connection with a big result set can stall
-PgBouncer for a long time.  One loop processes one `pkt_buf` amount of data.
+pg_ddm for a long time.  One loop processes one `pkt_buf` amount of data.
 0 means no limit.
 
 Default: 5
@@ -809,10 +809,10 @@ Default: 5
 
 Specifies whether to set the socket option `SO_REUSEPORT` on TCP
 listening sockets.  On some operating systems, this allows running
-multiple PgBouncer instances on the same host listening on the same
+multiple pg_ddm instances on the same host listening on the same
 port and having the kernel distribute the connections automatically.
-This option is a way to get PgBouncer to use more CPU cores.
-(PgBouncer is single-threaded and uses one CPU core per instance.)
+This option is a way to get pg_ddm to use more CPU cores.
+(pg_ddm is single-threaded and uses one CPU core per instance.)
 
 The behavior in detail depends on the operating system kernel.  As of
 this writing, this setting has the desired effect on (sufficiently
@@ -826,10 +826,10 @@ operating system's setsockopt() documentation for details.
 On systems that don't support the socket option at all, turning this
 setting on will result in an error.
 
-Each PgBouncer instance on the same host needs different settings for
+Each pg_ddm instance on the same host needs different settings for
 at least `unix_socket_dir` and `pidfile`, as well as `logfile` if that
 is used.  Also note that if you make use of this option, you can no
-longer connect to a specific PgBouncer instance via TCP/IP, which
+longer connect to a specific pg_ddm instance via TCP/IP, which
 might have implications for monitoring and metrics collection.
 
 Default: 0
@@ -888,7 +888,7 @@ The database name can contain characters `_0-9A-Za-z` without quoting.
 Names that contain other characters need to be quoted with standard SQL
 identifier quoting: double quotes, with "" for a single instance of a double quote.
 
-The database name "pgbouncer" is reserved for the admin console and
+The database name "pg_ddm" is reserved for the admin console and
 cannot be used as a key here.
 
 "*" acts as a fallback database: If the exact name does not exist, its
@@ -897,7 +897,7 @@ example, if there is an entry (and no other overriding entries)
 
     * = host=foo
 
-then a connection to PgBouncer specifying a database "bar" will
+then a connection to pg_ddm specifying a database "bar" will
 effectively behave as if an entry
 
     bar = host=foo dbname=bar
@@ -941,7 +941,7 @@ If `user=` is set, all connections to the destination database will be
 done with the specified user, meaning that there will be only one pool
 for this database.
 
-Otherwise, PgBouncer logs into the destination database with the client
+Otherwise, pg_ddm logs into the destination database with the client
 user name, meaning that there will be one pool per user.
 
 ### password
@@ -1017,7 +1017,7 @@ not have more than this many server connections).
 
 ## Include directive
 
-The PgBouncer configuration file can contain include directives, which specify
+The pg_ddm configuration file can contain include directives, which specify
 another configuration file to read and process. This allows splitting the
 configuration file into physically separate parts. The include directives look
 like this:
@@ -1039,7 +1039,7 @@ This section describes the format of the file specified by the
 
 There should be at least 2 fields, surrounded by double quotes. The first
 field is the user name and the second is either a plain-text, a MD5-hashed
-password, or a SCRAM secret.  PgBouncer ignores the rest of the line.
+password, or a SCRAM secret.  pg_ddm ignores the rest of the line.
 Double quotes in a field value can be escaped by writing two double quotes.
 
 PostgreSQL MD5-hashed password format:
@@ -1064,8 +1064,8 @@ password-based authentication (unless the password is specified
 directly in the database's connection string).  The latter works if
 the password is stored in plain text or MD5-hashed.  SCRAM secrets can
 only be used for logging into a server if the client authentication
-also uses SCRAM, the PgBouncer database definition does not specify a
-user name, and the SCRAM secrets are identical in PgBouncer and the
+also uses SCRAM, the pg_ddm database definition does not specify a
+user name, and the SCRAM secrets are identical in pg_ddm and the
 PostgreSQL server (same salt and iterations, not merely the same
 password).  This is due to an inherent security property of SCRAM: The
 stored SCRAM secret cannot by itself be used for deriving login
@@ -1091,7 +1091,7 @@ The file follows the format of the PostgreSQL `pg_hba.conf` file
 * Database field: Supports `all`, `sameuser`, `@file`, multiple names.  Not supported: `replication`, `samerole`, `samegroup`.
 * User name field: Supports `all`, `@file`, multiple names.  Not supported: `+groupname`.
 * Address field: Supports IPv4, IPv6.  Not supported: DNS names, domain prefixes.
-* Auth-method field: Only methods supported by PgBouncer's `auth_type`
+* Auth-method field: Only methods supported by pg_ddm's `auth_type`
   are supported, plus `peer` and `reject`, but except `any` and `pam`, which only work globally.
   User name map (`map=`) parameter is not supported.
 
@@ -1103,14 +1103,14 @@ Minimal config:
     [databases]
     template1 = host=localhost dbname=template1 auth_user=someuser
 
-    [pgbouncer]
+    [pg_ddm]
     pool_mode = session
     listen_port = 6432
     listen_addr = localhost
     auth_type = md5
     auth_file = users.txt
-    logfile = pgbouncer.log
-    pidfile = pgbouncer.pid
+    logfile = pg_ddm.log
+    pidfile = pg_ddm.pid
     admin_users = someuser
     stats_users = stat_collector
 
@@ -1129,7 +1129,7 @@ Database defaults:
 
 Example of a secure function for `auth_query`:
 
-    CREATE OR REPLACE FUNCTION pgbouncer.user_lookup(in i_username text, out uname text, out phash text)
+    CREATE OR REPLACE FUNCTION pg_ddm.user_lookup(in i_username text, out uname text, out phash text)
     RETURNS record AS $$
     BEGIN
         SELECT usename, passwd FROM pg_catalog.pg_shadow
@@ -1137,12 +1137,12 @@ Example of a secure function for `auth_query`:
         RETURN;
     END;
     $$ LANGUAGE plpgsql SECURITY DEFINER;
-    REVOKE ALL ON FUNCTION pgbouncer.user_lookup(text) FROM public, pgbouncer;
-    GRANT EXECUTE ON FUNCTION pgbouncer.user_lookup(text) TO pgbouncer;
+    REVOKE ALL ON FUNCTION pg_ddm.user_lookup(text) FROM public, pg_ddm;
+    GRANT EXECUTE ON FUNCTION pg_ddm.user_lookup(text) TO pg_ddm;
 
 
 ## See also
 
-pgbouncer(1) - man page for general usage, console commands
+pg_ddm(1) - man page for general usage, console commands
 
-<https://www.pgbouncer.org/>
+<https://www.pg_ddm.org/>

@@ -1,4 +1,4 @@
-PgBouncer TODO list
+pg_ddm TODO list
 ===================
 
 Highly visible missing features
@@ -22,7 +22,7 @@ Problems / cleanups
 * other per-user settings
 
 * Maintenance order vs. lifetime_kill_gap:
-  <http://lists.pgfoundry.org/pipermail/pgbouncer-general/2011-February/000679.html>
+  <http://lists.pgfoundry.org/pipermail/pg_ddm-general/2011-February/000679.html>
 
 * per_loop_maint/per_loop_activate take too much time in case
   of moderate load and lots of pools.  Perhaps active_pool_list
@@ -58,7 +58,7 @@ Dubious/complicated features
 ----------------------------
 
 * Load-balancing / failover.  Both are already solved via DNS.
-  Adding load-balancing config in pgbouncer might be good idea.
+  Adding load-balancing config in pg_ddm might be good idea.
   Adding failover decision-making is not...
 
 * User-based route.  Simplest would be to move db info to pool

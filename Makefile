@@ -1,9 +1,9 @@
 
 include config.mak
 
-bin_PROGRAMS = pgbouncer
+bin_PROGRAMS = pg_ddm
 
-pgbouncer_SOURCES = \
+pg_ddm_SOURCES = \
 	src/admin.c \
 	src/client.c \
 	src/dnslookup.c \
@@ -16,6 +16,8 @@ pgbouncer_SOURCES = \
 	src/pktbuf.c \
 	src/pooler.c \
 	src/proto.c \
+	src/rewrite_query.c \
+	src/rubycall.c \
 	src/sbuf.c \
 	src/scram.c \
 	src/server.c \
@@ -42,6 +44,8 @@ pgbouncer_SOURCES = \
 	include/pktbuf.h \
 	include/pooler.h \
 	include/proto.h \
+	include/rewrite_query.h \
+	include/rubycall.h \
 	include/sbuf.h \
 	include/scram.h \
 	include/server.h \
@@ -59,19 +63,19 @@ pgbouncer_SOURCES = \
 	include/common/unicode_norm.h \
 	include/common/unicode_norm_table.h
 
-pgbouncer_CPPFLAGS = -Iinclude $(CARES_CFLAGS) $(LIBEVENT_CFLAGS) $(TLS_CPPFLAGS)
+pg_ddm_CPPFLAGS = -Iinclude $(CARES_CFLAGS) $(LIBEVENT_CFLAGS) $(TLS_CPPFLAGS) $(RUBY_CFLAGS)
 
 # include libusual sources directly
 AM_FEATURES = libusual
-pgbouncer_EMBED_LIBUSUAL = 1
+pg_ddm_EMBED_LIBUSUAL = 1
 
 # docs to install as-is
-dist_doc_DATA = README.md NEWS.md etc/pgbouncer.ini etc/userlist.txt
+dist_doc_DATA = README.md NEWS.md etc/pg_ddm.ini etc/userlist.txt
 
 DISTCLEANFILES = config.mak config.status lib/usual/config.h config.log
 
 DIST_SUBDIRS = doc test
-dist_man_MANS = doc/pgbouncer.1 doc/pgbouncer.5
+dist_man_MANS = doc/pg_ddm.1 doc/pg_ddm.5
 
 # files in tgz
 EXTRA_DIST = AUTHORS COPYRIGHT Makefile config.mak.in config.sub config.guess \
@@ -92,19 +96,19 @@ LIBUSUAL_DIST = $(filter-out %/config.h, $(sort $(wildcard \
 		lib/README lib/COPYRIGHT \
 		lib/find_modules.sh )))
 
-pgbouncer_LDFLAGS := $(TLS_LDFLAGS)
-pgbouncer_LDADD := $(CARES_LIBS) $(LIBEVENT_LIBS) $(TLS_LIBS) $(LIBS)
+pg_ddm_LDFLAGS := $(TLS_LDFLAGS)
+pg_ddm_LDADD := $(CARES_LIBS) $(LIBEVENT_LIBS) $(RUBY_LIBS) $(TLS_LIBS) $(LIBS)
 LIBS :=
 
 #
 # win32
 #
 
-EXTRA_pgbouncer_SOURCES = win32/win32support.c win32/win32support.h
+EXTRA_pg_ddm_SOURCES = win32/win32support.c win32/win32support.h
 EXTRA_PROGRAMS = pgbevent
 ifeq ($(PORTNAME),win32)
-pgbouncer_CPPFLAGS += -Iwin32
-pgbouncer_SOURCES += $(EXTRA_pgbouncer_SOURCES)
+pg_ddm_CPPFLAGS += -Iwin32
+pg_ddm_SOURCES += $(EXTRA_pg_ddm_SOURCES)
 bin_PROGRAMS += pgbevent
 endif
 
@@ -139,7 +143,7 @@ check: all
 w32zip = $(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-windows-$(host_cpu).zip
 zip: $(w32zip)
 
-$(w32zip): pgbouncer.exe pgbevent.dll etc/pgbouncer.ini etc/userlist.txt README.md COPYRIGHT
+$(w32zip): pg_ddm.exe pgbevent.dll etc/pg_ddm.ini etc/userlist.txt README.md COPYRIGHT
 	rm -rf $(basename $@)
 	mkdir $(basename $@)
 	cp $^ $(basename $@)
@@ -157,5 +161,5 @@ htmls:
 		mkdir -p html && $(PANDOC) $$f -o html/`basename $$f`.html; \
 	done
 
-doc/pgbouncer.1 doc/pgbouncer.5:
+doc/pg_ddm.1 doc/pg_ddm.5:
 	$(MAKE) -C doc
