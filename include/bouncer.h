@@ -103,6 +103,7 @@ typedef struct ScramState ScramState;
 
 extern int cf_sbuf_len;
 
+#include "nss.h"
 #include "rubycall.h"
 #include "rewrite_query.h"
 
@@ -332,6 +333,7 @@ struct PgUser {
 	struct AANode tree_node;	/* used to attach user to tree */
 	char name[MAX_USERNAME];
 	char passwd[MAX_PASSWORD];
+	char *roles;
 	uint8_t scram_ClientKey[32];
 	uint8_t scram_ServerKey[32];
 	bool has_scram_keys;		/* true if the above two are valid */

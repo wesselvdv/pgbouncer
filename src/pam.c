@@ -24,6 +24,8 @@
 
 #ifdef HAVE_PAM
 
+#include <stdio.h>
+
 #include <pthread.h>
 #include <security/pam_appl.h>
 
@@ -248,9 +250,22 @@ static void* pam_auth_worker(void *arg)
 			continue;
 		}
 
-		if (pam_check_passwd(request)) {
-			request->status = PAM_STATUS_SUCCESS;
-		} else {
+		if (pam_check_passwd(request))
+		{
+			char *roles = nsgetgroups(request->client->login_user->name);
+
+			if (roles)
+			{
+				request->client->login_user->roles = roles;
+				request->status = PAM_STATUS_SUCCESS;
+			}
+			else
+			{
+				request->status = PAM_STATUS_FAILED;
+			}
+		}
+		else
+		{
 			request->status = PAM_STATUS_FAILED;
 		}
 

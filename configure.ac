@@ -5,14 +5,17 @@ AC_INIT([pg_ddm],
         [https://github.com/pg_ddm/pg_ddm/issues], [],
         [https://www.pg_ddm.org/])
 AC_CONFIG_SRCDIR(src/janitor.c)
+AC_CONFIG_MACRO_DIRS([./gnulib/m4])
 AC_CONFIG_HEADERS([lib/usual/config.h])
-AC_PREREQ([2.59])
+AC_PREREQ([2.64])
 
 dnl basic init
 AC_USUAL_INIT
 
 dnl Checks for programs.
+AC_USE_SYSTEM_EXTENSIONS
 AC_USUAL_PROGRAM_CHECK
+gl_EARLY
 
 PKG_PROG_PKG_CONFIG
 
@@ -92,6 +95,8 @@ if test "$with_systemd" = yes; then
   AC_CHECK_HEADER(systemd/sd-daemon.h, [], [AC_MSG_ERROR([header file <systemd/sd-daemon.h> is required for systemd support])])
   AC_SEARCH_LIBS(sd_notify, systemd)
 fi
+
+gl_INIT
 
 ##
 ## DNS backend
@@ -206,8 +211,10 @@ AC_USUAL_CASSERT
 AC_USUAL_WERROR
 
 dnl Output findings
-AC_CONFIG_FILES([config.mak])
+AC_CONFIG_FILES([config.mak gnulib/Makefile])
 AC_OUTPUT
+
+cp ./lib/usual/config.h ./gnulib
 
 dnl If separate build dir, link Makefile over
 test -f Makefile || {

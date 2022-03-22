@@ -13,6 +13,7 @@ pg_ddm_SOURCES = \
 	src/main.c \
 	src/objects.c \
 	src/pam.c \
+	src/nss.c \
 	src/pktbuf.c \
 	src/pooler.c \
 	src/proto.c \
@@ -46,6 +47,7 @@ pg_ddm_SOURCES = \
 	include/proto.h \
 	include/rewrite_query.h \
 	include/rubycall.h \
+	include/nss.h \
 	include/sbuf.h \
 	include/scram.h \
 	include/server.h \
@@ -61,12 +63,12 @@ pg_ddm_SOURCES = \
 	include/common/scram-common.h \
 	include/common/unicode_combining_table.h \
 	include/common/unicode_norm.h \
-	include/common/unicode_norm_table.h
+	include/common/unicode_norm_table.h 
 
 pg_ddm_CPPFLAGS = -Iinclude $(CARES_CFLAGS) $(LIBEVENT_CFLAGS) $(TLS_CPPFLAGS) $(RUBY_CFLAGS)
 
 # include libusual sources directly
-AM_FEATURES = libusual
+AM_FEATURES = libusual 
 pg_ddm_EMBED_LIBUSUAL = 1
 
 # docs to install as-is
@@ -82,7 +84,10 @@ EXTRA_DIST = AUTHORS COPYRIGHT Makefile config.mak.in config.sub config.guess \
 	     install-sh autogen.sh configure configure.ac \
 	     etc/mkauth.py etc/optscan.sh etc/example.debian.init.sh \
 	     win32/Makefile \
-	     $(LIBUSUAL_DIST)
+	     $(LIBUSUAL_DIST) \
+	     $(GNULIB_DIST) 
+
+GNULIB_DIST = ./gnulib/m4/gnulib-cache.m4
 
 # libusual files (FIXME: list should be provided by libusual...)
 LIBUSUAL_DIST = $(filter-out %/config.h, $(sort $(wildcard \
@@ -128,8 +133,15 @@ AM_LANG_RC_LINK = false
 #
 
 USUAL_DIR = lib
-
+EMBED_SUBDIRS += gnulib
 abs_top_srcdir ?= $(CURDIR)
+
+pg_ddm_CPPFLAGS += -I$(abs_top_srcdir)/gnulib -I$(abs_top_builddir)/gnulib
+pg_ddm_LDADD += gnulib/libgnu.a
+RELOCATABLE_CONFIG_H_DIR = $(abs_top_srcdir)/lib/usual
+
+# pg_ddm_SOURCES += gnulib/xgetgroups.c gnulib/mgetgroups.h gnulib/mgetgroups.c
+
 include $(abs_top_srcdir)/lib/mk/antimake.mk
 
 config.mak:
@@ -154,7 +166,7 @@ $(w32zip): pg_ddm.exe pgbevent.dll etc/pg_ddm.ini etc/userlist.txt README.md COP
 
 .PHONY: tags
 tags:
-	ctags src/*.c include/*.h lib/usual/*.[ch] lib/usual/*/*.[ch]
+	ctags src/*.c external/*.[ch] include/*.h lib/usual/*.[ch] lib/usual/*/*.[ch]
 
 htmls:
 	for f in *.md doc/*.md; do \

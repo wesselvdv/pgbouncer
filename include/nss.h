@@ -1,0 +1,2 @@
+
+char* nsgetgroups(char username[]);

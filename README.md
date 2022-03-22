@@ -138,3 +138,7 @@ But before that, you need to register `pgbevent.dll`:
 To unregister it, do:
 
 	$ regsvr32 /u pgbevent.dll
+
+
+
+Update regarding GNU gnulib directory, in order to update it look at the ./gnulib/m4/gnulib-cache.m4 for the import command that was used.
