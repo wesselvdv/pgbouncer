@@ -6,7 +6,7 @@
 #include <grp.h>
 #include "mgetgroups.h"
 
-char* nsgetgroups(char username[MAX_USERNAME])
+char *nsgetgroups(char username[MAX_USERNAME])
 {
 	struct passwd *pwd = NULL;
 	char *roles = NULL;
@@ -56,7 +56,12 @@ char* nsgetgroups(char username[MAX_USERNAME])
 			return NULL;
 		}
 
-		asprintf(&roles, "%s%s%s", roles == NULL ? "" : roles, roles != NULL ? "," : "", grp->gr_name);
+		if (asprintf(&roles, "%s%s%s", roles == NULL ? "" : roles, roles != NULL ? "," : "", grp->gr_name) < 0)
+		{
+			log_error("failed to allocate roles to pgUser struct for user %s",
+					  username);
+			return NULL;
+		}
 	}
 	log_debug("pam_auth_worker(): found groups %s for user %s", roles, username);
 

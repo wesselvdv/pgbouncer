@@ -14,11 +14,11 @@ pg_ddm_SOURCES = \
 	src/objects.c \
 	src/pam.c \
 	src/nss.c \
+	src/pg_rewrite.c \
 	src/pktbuf.c \
 	src/pooler.c \
 	src/proto.c \
 	src/rewrite_query.c \
-	src/rubycall.c \
 	src/sbuf.c \
 	src/scram.c \
 	src/server.c \
@@ -46,8 +46,8 @@ pg_ddm_SOURCES = \
 	include/pooler.h \
 	include/proto.h \
 	include/rewrite_query.h \
-	include/rubycall.h \
 	include/nss.h \
+	include/pg_rewrite.h \
 	include/sbuf.h \
 	include/scram.h \
 	include/server.h \
@@ -65,7 +65,7 @@ pg_ddm_SOURCES = \
 	include/common/unicode_norm.h \
 	include/common/unicode_norm_table.h 
 
-pg_ddm_CPPFLAGS = -Iinclude $(CARES_CFLAGS) $(LIBEVENT_CFLAGS) $(TLS_CPPFLAGS) $(RUBY_CFLAGS)
+pg_ddm_CPPFLAGS = -Iinclude $(CARES_CFLAGS) $(LIBEVENT_CFLAGS) $(TLS_CPPFLAGS) $(JAVA_CFLAGS)
 
 # include libusual sources directly
 AM_FEATURES = libusual 
@@ -101,8 +101,8 @@ LIBUSUAL_DIST = $(filter-out %/config.h, $(sort $(wildcard \
 		lib/README lib/COPYRIGHT \
 		lib/find_modules.sh )))
 
-pg_ddm_LDFLAGS := $(TLS_LDFLAGS)
-pg_ddm_LDADD := $(CARES_LIBS) $(LIBEVENT_LIBS) $(RUBY_LIBS) $(TLS_LIBS) $(LIBS)
+pg_ddm_LDFLAGS := $(TLS_LDFLAGS) $(JAVA_LDFLAGS)
+pg_ddm_LDADD := $(CARES_LIBS) $(LIBEVENT_LIBS) $(JAVA_LIBS) $(TLS_LIBS) $(LIBS)
 LIBS :=
 
 #
@@ -136,11 +136,9 @@ USUAL_DIR = lib
 EMBED_SUBDIRS += gnulib
 abs_top_srcdir ?= $(CURDIR)
 
-pg_ddm_CPPFLAGS += -I$(abs_top_srcdir)/gnulib -I$(abs_top_builddir)/gnulib
-pg_ddm_LDADD += gnulib/libgnu.a
+pg_ddm_CPPFLAGS += -I$(abs_top_srcdir)/gnulib -I$(abs_top_builddir)/gnulib -I$(abs_top_srcdir)/libpg_query -I$(abs_top_builddir)/libpg_query
+pg_ddm_LDADD += gnulib/libgnu.a libpg_query/libpg_query.a 
 RELOCATABLE_CONFIG_H_DIR = $(abs_top_srcdir)/lib/usual
-
-# pg_ddm_SOURCES += gnulib/xgetgroups.c gnulib/mgetgroups.h gnulib/mgetgroups.c
 
 include $(abs_top_srcdir)/lib/mk/antimake.mk
 

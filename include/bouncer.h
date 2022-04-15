@@ -104,7 +104,7 @@ typedef struct ScramState ScramState;
 extern int cf_sbuf_len;
 
 #include "nss.h"
-#include "rubycall.h"
+#include "pg_rewrite.h"
 #include "rewrite_query.h"
 
 #include "util.h"

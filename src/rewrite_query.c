@@ -34,7 +34,6 @@ bool rewrite_query(PgSocket *client, PktHdr *pkt) {
 	char *pkt_start;
 	char *stmt_str = "", *query_str, *loggable_query_str, *tmp_new_query_str,
 			*tmp_new_query_role = "master", *new_query_str;
-	struct query_return qr;
 	char *new_io_buf;
 	char *remaining_buffer_ptr;
 	int new_pkt_len, remaining_buffer_len;
@@ -42,8 +41,6 @@ bool rewrite_query(PgSocket *client, PktHdr *pkt) {
 	PgDatabase *db;
 	PgPool *pool;
 
-
-	qr.query = NULL;
 
 	if (!handle_incomplete_packet(client, pkt))
 		return false;
@@ -70,6 +67,8 @@ bool rewrite_query(PgSocket *client, PktHdr *pkt) {
 	loggable_query_str = strip_newlines(query_str);
 	slog_debug(client, "rewrite_query: Username => %s",
 			client->login_user->name);
+	slog_debug(client, "rewrite_query: Roles => %s",
+			client->login_user->roles);
 	slog_debug(client, "rewrite_query: Orig Query=> %s", loggable_query_str);
 	free(loggable_query_str);
 
@@ -78,10 +77,9 @@ bool rewrite_query(PgSocket *client, PktHdr *pkt) {
 		return true;
 
 	if (cf_pg_ddm_enabled) {
-        /* call ruby function to rewrite the query */
-        qr = rubycall(client, client->login_user->name, query_str);
-        tmp_new_query_str = qr.query;
-    }else {
+		/* call ruby function to rewrite the query */
+		tmp_new_query_str = rewrite(client, client->login_user, strip_newlines(query_str));
+	}else {
         tmp_new_query_str = query_str;
     }
     if (tmp_new_query_str == NULL) {
@@ -147,11 +145,12 @@ bool rewrite_query(PgSocket *client, PktHdr *pkt) {
 
 
 	if (cf_pg_ddm_rewrite_route) {
-		if (qr.query == NULL) {
-			qr = rubycall_role(client, client->login_user->name, query_str);
-		}
-        slog_debug(client, "DB Role: %s", qr.role);
-		tmp_new_query_role = qr.role;
+		// TODO: removed role rewriting logic
+		// if (qr.query == NULL) {
+		// 	qr = rubycall_role(client, client->login_user->name, query_str);
+		// }
+        // slog_debug(client, "DB Role: %s", qr.role);
+		// tmp_new_query_role = qr.role;
 	}
 
 	if (cf_pg_ddm_ini_route || cf_pg_ddm_rewrite_route) {
